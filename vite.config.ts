@@ -2,13 +2,28 @@ import { defineConfig } from 'vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from "@tailwindcss/vite";
+import { resolve } from "path";
 
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+
+  build: {
+    rollupOptions: {
+      input: {
+        popup: resolve(__dirname, "index.html"),
+        content: resolve(__dirname, "src/content.ts"),
+      },
+
+      output: {
+        entryFileNames: "[name].js",
+        chunkFileNames: "chunks/[name].js",
+        assetFileNames: "assets/[name].[ext]",
+      },
+    },
+  },
 })
