@@ -18,8 +18,10 @@ function getCommitAuthor(row: HTMLElement): string | null {
   const ariaAuthor = row
     .querySelector('[aria-label^="commits by "]')
     ?.getAttribute("aria-label");
-  if (ariaAuthor)
+
+  if (ariaAuthor) {
     return ariaAuthor.replace("commits by ", "").trim().toLowerCase();
+  }
 
   const links = Array.from(row.querySelectorAll<HTMLAnchorElement>("a"));
   for (const link of links) {
@@ -36,7 +38,56 @@ function getCommitAuthor(row: HTMLElement): string | null {
       /* ignore */
     }
   }
+
   return null;
+}
+
+function revealRow(row: HTMLElement) {
+  row.style.display = "";
+
+  row.animate(
+    [
+      {
+        opacity: 0,
+        transform: "translateY(-6px)",
+      },
+      {
+        opacity: 1,
+        transform: "translateY(0)",
+      },
+    ],
+    {
+      duration: 180,
+      easing: "ease-out",
+    },
+  );
+}
+
+function hideRow(row: HTMLElement) {
+  const animation = row.animate(
+    [
+      {
+        opacity: 1,
+        transform: "translateY(0)",
+      },
+      {
+        opacity: 0,
+        transform: "translateY(-6px)",
+      },
+    ],
+    {
+      duration: 140,
+      easing: "ease-in",
+    },
+  );
+
+  animation.onfinish = () => {
+    row.style.display = "none";
+  };
+}
+
+function hideRowImmediately(row: HTMLElement) {
+  row.style.display = "none";
 }
 
 function cleanupGitMatter() {
@@ -44,10 +95,11 @@ function cleanupGitMatter() {
   mountedRoots.forEach((root) => {
     try {
       root.unmount();
-    } catch (e) {
+    } catch {
       /* root might already be gone */
     }
   });
+
   mountedRoots.clear();
 
   // 2. Remove injected elements
@@ -71,10 +123,12 @@ function filterCommits() {
   const panels = Array.from(
     document.querySelectorAll('div[class*="CommitGroup-module__panel"]'),
   );
+
   let streak: HiddenGroup[] = [];
 
   function flushStreak() {
     if (streak.length === 0) return;
+
     if (streak.length >= 2) {
       mountHiddenStreak(streak);
     } else {
@@ -82,6 +136,7 @@ function filterCommits() {
       single.timelineRow.style.display = "";
       mountSingleToggle(single.hiddenRows);
     }
+
     streak = [];
   }
 
@@ -92,36 +147,44 @@ function filterCommits() {
     const timelineRow = panel.closest(
       'div[class*="TimelineRow-module__timelineRowItem"]',
     ) as HTMLElement | null;
+
     if (!timelineRow) return;
 
     const commitRows = Array.from(
       panel.querySelectorAll<HTMLElement>('[data-testid="commit-row-item"]'),
     );
+
     if (commitRows.length === 0) return;
 
     const hiddenRows: HTMLElement[] = [];
+
     commitRows.forEach((row) => {
       const author = getCommitAuthor(row);
+
       if (author && filteredAuthors.has(author)) {
-        row.style.display = "none";
+        hideRowImmediately(row);
         hiddenRows.push(row);
       }
     });
 
     const visibleCount = commitRows.length - hiddenRows.length;
+
     const marker = document.createElement("div");
     marker.className = "git-matter-processed";
     marker.style.display = "none";
     panel.appendChild(marker);
 
     if (hiddenRows.length > 0 && visibleCount === 0) {
-      timelineRow.style.display = "none";
+      hideRowImmediately(timelineRow);
       streak.push({ timelineRow, hiddenRows });
       return;
     }
 
     flushStreak();
-    if (hiddenRows.length > 0) mountSingleToggle(hiddenRows);
+
+    if (hiddenRows.length > 0) {
+      mountSingleToggle(hiddenRows);
+    }
   });
 
   flushStreak();
@@ -130,12 +193,14 @@ function filterCommits() {
 function mountSingleToggle(hiddenRows: HTMLElement[]) {
   const container = document.createElement("div");
   container.className = "git-matter-toggle-root";
+
   hiddenRows[0].parentElement?.insertBefore(container, hiddenRows[0]);
 
   const root = createRoot(container);
   mountedRoots.set(container, root);
 
   let expanded = false;
+
   const render = () => {
     root.render(
       createElement(HiddenCommitsToggle, {
@@ -143,21 +208,30 @@ function mountSingleToggle(hiddenRows: HTMLElement[]) {
         hiddenCount: hiddenRows.length,
         onToggle: () => {
           expanded = !expanded;
-          hiddenRows.forEach(
-            (row) => (row.style.display = expanded ? "" : "none"),
-          );
+
+          hiddenRows.forEach((row) => {
+            if (expanded) {
+              revealRow(row);
+            } else {
+              hideRow(row);
+            }
+          });
+
           render();
         },
       }),
     );
   };
+
   render();
 }
 
 function mountHiddenStreak(groups: HiddenGroup[]) {
   const firstRow = groups[0].timelineRow;
+
   const container = document.createElement("div");
   container.className = "git-matter-streak-root";
+
   firstRow.parentElement?.insertBefore(container, firstRow);
 
   const root = createRoot(container);
@@ -167,6 +241,7 @@ function mountHiddenStreak(groups: HiddenGroup[]) {
     (sum, group) => sum + group.hiddenRows.length,
     0,
   );
+
   let expanded = false;
 
   const render = () => {
@@ -177,31 +252,45 @@ function mountHiddenStreak(groups: HiddenGroup[]) {
         hiddenDayCount: groups.length,
         onToggle: () => {
           expanded = !expanded;
+
           groups.forEach((group) => {
-            group.timelineRow.style.display = expanded ? "" : "none";
-            group.hiddenRows.forEach(
-              (row) => (row.style.display = expanded ? "" : "none"),
-            );
+            if (expanded) {
+              revealRow(group.timelineRow);
+            } else {
+              hideRow(group.timelineRow);
+            }
+
+            group.hiddenRows.forEach((row) => {
+              if (expanded) {
+                revealRow(row);
+              } else {
+                hideRow(row);
+              }
+            });
           });
+
           render();
         },
       }),
     );
   };
+
   render();
 }
 
 // Execution Logic
 let rerunTimeout: ReturnType<typeof setTimeout>;
+
 function scheduleRerun() {
   clearTimeout(rerunTimeout);
+
   rerunTimeout = setTimeout(() => {
     cleanupGitMatter();
     filterCommits();
   }, 300);
 }
 
-// 1. Observe DOM changes (Crucial for client-side navigation)
+// 1. Observe DOM changes, crucial for client-side navigation
 const observer = new MutationObserver((mutations) => {
   const hasNewCommits = mutations.some((m) =>
     Array.from(m.addedNodes).some(
@@ -210,10 +299,16 @@ const observer = new MutationObserver((mutations) => {
         node.querySelector?.('[data-testid="commit-row-item"]'),
     ),
   );
-  if (hasNewCommits) scheduleRerun();
+
+  if (hasNewCommits) {
+    scheduleRerun();
+  }
 });
 
-observer.observe(document.body, { childList: true, subtree: true });
+observer.observe(document.body, {
+  childList: true,
+  subtree: true,
+});
 
 // 2. Browser Back/Forward buttons
 window.addEventListener("popstate", scheduleRerun);
