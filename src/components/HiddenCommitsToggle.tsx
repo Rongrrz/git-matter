@@ -2,7 +2,7 @@ import { createElement } from "react";
 
 type Props = {
   expanded: boolean;
-  hiddenRows: HTMLElement[];
+  hiddenCount: number;
   onToggle: () => void;
 };
 
@@ -17,12 +17,13 @@ export function HiddenCommitsToggle(props: Props) {
       style: {
         display: "flex",
         alignItems: "center",
-        gap: "6px",
 
         alignSelf: "flex-start",
 
         margin: "0",
         padding: "8px 12px",
+
+        width: "100%",
 
         fontSize: "11px",
         fontWeight: 400,
@@ -34,8 +35,6 @@ export function HiddenCommitsToggle(props: Props) {
 
         border: "none",
         borderBottom: "1px solid var(--borderColor-muted)",
-
-        width: "100%",
 
         cursor: "pointer",
 
@@ -62,7 +61,7 @@ export function HiddenCommitsToggle(props: Props) {
     },
 
     props.expanded
-      ? `Hide commits`
-      : `${props.hiddenRows.length} commits hidden by git-matter`,
+      ? `Hide ${props.hiddenCount} commits`
+      : `Show ${props.hiddenCount} hidden commits`,
   );
 }
