@@ -4,7 +4,11 @@ import "./content.css";
 import { HiddenCommitsToggle } from "./components/HiddenCommitsToggle";
 import { HiddenCommitStreak } from "./components/HiddenCommitsStreak";
 
-const filteredAuthors = new Set(["dependabot[bot]", "renovate[bot]"]);
+const filteredAuthors = new Set([
+  "dependabot[bot]",
+  "renovate[bot]",
+  "github-actions[bot]",
+]);
 
 type HiddenGroup = {
   timelineRow: HTMLElement;
