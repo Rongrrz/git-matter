@@ -1,97 +1,231 @@
 import { createElement } from "react";
-import { createRoot } from "react-dom/client";
-
+import { createRoot, type Root } from "react-dom/client";
 import "./content.css";
-
-import { HiddenCommitsToggle } from "./toggle-hidden-commits";
+import { HiddenCommitsToggle } from "./components/HiddenCommitsToggle";
+import { HiddenCommitStreak } from "./components/HiddenCommitsStreak";
 
 const filteredAuthors = new Set(["dependabot[bot]", "renovate[bot]"]);
 
-function filterCommits() {
-  const commitGroups = document.querySelectorAll(
-    'div[class*="CommitGroup-module__panel"]',
-  );
+type HiddenGroup = {
+  timelineRow: HTMLElement;
+  hiddenRows: HTMLElement[];
+};
 
-  commitGroups.forEach((group) => {
-    if (group.querySelector(".git-matter-toggle-root")) {
-      return;
+// Track roots globally so we can properly unmount them during cleanup
+const mountedRoots = new Map<HTMLElement, Root>();
+
+function getCommitAuthor(row: HTMLElement): string | null {
+  const ariaAuthor = row
+    .querySelector('[aria-label^="commits by "]')
+    ?.getAttribute("aria-label");
+  if (ariaAuthor)
+    return ariaAuthor.replace("commits by ", "").trim().toLowerCase();
+
+  const links = Array.from(row.querySelectorAll<HTMLAnchorElement>("a"));
+  for (const link of links) {
+    const text = link.textContent?.trim().toLowerCase();
+    if (text && filteredAuthors.has(text)) return text;
+  }
+
+  const authorLink = row.querySelector<HTMLAnchorElement>('a[href*="author="]');
+  if (authorLink) {
+    try {
+      const url = new URL(authorLink.href);
+      return url.searchParams.get("author")?.trim().toLowerCase() || null;
+    } catch {
+      /* ignore */
     }
+  }
+  return null;
+}
 
-    const commitRows = group.querySelectorAll<HTMLElement>(
-      '[data-testid="commit-row-item"]',
+function cleanupGitMatter() {
+  // 1. Properly unmount React roots before removing DOM nodes
+  mountedRoots.forEach((root) => {
+    try {
+      root.unmount();
+    } catch (e) {
+      /* root might already be gone */
+    }
+  });
+  mountedRoots.clear();
+
+  // 2. Remove injected elements
+  document
+    .querySelectorAll(
+      ".git-matter-toggle-root, .git-matter-streak-root, .git-matter-processed",
+    )
+    .forEach((el) => el.remove());
+
+  // 3. Reset visibility
+  document
+    .querySelectorAll<HTMLElement>(
+      '[data-testid="commit-row-item"], div[class*="TimelineRow-module__timelineRowItem"]',
+    )
+    .forEach((row) => {
+      row.style.display = "";
+    });
+}
+
+function filterCommits() {
+  const panels = Array.from(
+    document.querySelectorAll('div[class*="CommitGroup-module__panel"]'),
+  );
+  let streak: HiddenGroup[] = [];
+
+  function flushStreak() {
+    if (streak.length === 0) return;
+    if (streak.length >= 2) {
+      mountHiddenStreak(streak);
+    } else {
+      const single = streak[0];
+      single.timelineRow.style.display = "";
+      mountSingleToggle(single.hiddenRows);
+    }
+    streak = [];
+  }
+
+  panels.forEach((panel) => {
+    // If already processed and not cleaned up, skip
+    if (panel.querySelector(".git-matter-processed")) return;
+
+    const timelineRow = panel.closest(
+      'div[class*="TimelineRow-module__timelineRowItem"]',
+    ) as HTMLElement | null;
+    if (!timelineRow) return;
+
+    const commitRows = Array.from(
+      panel.querySelectorAll<HTMLElement>('[data-testid="commit-row-item"]'),
     );
+    if (commitRows.length === 0) return;
 
     const hiddenRows: HTMLElement[] = [];
-
     commitRows.forEach((row) => {
-      const authorLabel = row
-        .querySelector('[aria-label^="commits by "]')
-        ?.getAttribute("aria-label");
-
-      if (!authorLabel) {
-        return;
-      }
-
-      const author = authorLabel.replace("commits by ", "").toLowerCase();
-
-      if (filteredAuthors.has(author)) {
+      const author = getCommitAuthor(row);
+      if (author && filteredAuthors.has(author)) {
         row.style.display = "none";
         hiddenRows.push(row);
       }
     });
 
-    if (hiddenRows.length === 0) {
+    const visibleCount = commitRows.length - hiddenRows.length;
+    const marker = document.createElement("div");
+    marker.className = "git-matter-processed";
+    marker.style.display = "none";
+    panel.appendChild(marker);
+
+    if (hiddenRows.length > 0 && visibleCount === 0) {
+      timelineRow.style.display = "none";
+      streak.push({ timelineRow, hiddenRows });
       return;
     }
 
-    let expanded = false;
-
-    const container = document.createElement("div");
-
-    container.className = "git-matter-toggle-root";
-
-    const firstHiddenRow = hiddenRows[0];
-
-    firstHiddenRow.parentElement?.insertBefore(container, firstHiddenRow);
-
-    const root = createRoot(container);
-
-    function render() {
-      root.render(
-        createElement(HiddenCommitsToggle, {
-          hiddenRows,
-          expanded,
-
-          onToggle: () => {
-            expanded = !expanded;
-
-            hiddenRows.forEach((row) => {
-              row.style.display = expanded ? "" : "none";
-            });
-
-            render();
-          },
-        }),
-      );
-    }
-
-    render();
+    flushStreak();
+    if (hiddenRows.length > 0) mountSingleToggle(hiddenRows);
   });
+
+  flushStreak();
 }
 
-filterCommits();
+function mountSingleToggle(hiddenRows: HTMLElement[]) {
+  const container = document.createElement("div");
+  container.className = "git-matter-toggle-root";
+  hiddenRows[0].parentElement?.insertBefore(container, hiddenRows[0]);
 
-function initialize() {
-  filterCommits();
+  const root = createRoot(container);
+  mountedRoots.set(container, root);
+
+  let expanded = false;
+  const render = () => {
+    root.render(
+      createElement(HiddenCommitsToggle, {
+        expanded,
+        hiddenCount: hiddenRows.length,
+        onToggle: () => {
+          expanded = !expanded;
+          hiddenRows.forEach(
+            (row) => (row.style.display = expanded ? "" : "none"),
+          );
+          render();
+        },
+      }),
+    );
+  };
+  render();
 }
 
-initialize();
+function mountHiddenStreak(groups: HiddenGroup[]) {
+  const firstRow = groups[0].timelineRow;
+  const container = document.createElement("div");
+  container.className = "git-matter-streak-root";
+  firstRow.parentElement?.insertBefore(container, firstRow);
 
-const observer = new MutationObserver(() => {
-  filterCommits();
+  const root = createRoot(container);
+  mountedRoots.set(container, root);
+
+  const totalHiddenCommits = groups.reduce(
+    (sum, group) => sum + group.hiddenRows.length,
+    0,
+  );
+  let expanded = false;
+
+  const render = () => {
+    root.render(
+      createElement(HiddenCommitStreak, {
+        expanded,
+        hiddenCommitCount: totalHiddenCommits,
+        hiddenDayCount: groups.length,
+        onToggle: () => {
+          expanded = !expanded;
+          groups.forEach((group) => {
+            group.timelineRow.style.display = expanded ? "" : "none";
+            group.hiddenRows.forEach(
+              (row) => (row.style.display = expanded ? "" : "none"),
+            );
+          });
+          render();
+        },
+      }),
+    );
+  };
+  render();
+}
+
+// Execution Logic
+let rerunTimeout: ReturnType<typeof setTimeout>;
+function scheduleRerun() {
+  clearTimeout(rerunTimeout);
+  rerunTimeout = setTimeout(() => {
+    cleanupGitMatter();
+    filterCommits();
+  }, 300);
+}
+
+// 1. Observe DOM changes (Crucial for client-side navigation)
+const observer = new MutationObserver((mutations) => {
+  const hasNewCommits = mutations.some((m) =>
+    Array.from(m.addedNodes).some(
+      (node) =>
+        node instanceof HTMLElement &&
+        node.querySelector?.('[data-testid="commit-row-item"]'),
+    ),
+  );
+  if (hasNewCommits) scheduleRerun();
 });
 
-observer.observe(document.body, {
-  childList: true,
-  subtree: true,
-});
+observer.observe(document.body, { childList: true, subtree: true });
+
+// 2. Browser Back/Forward buttons
+window.addEventListener("popstate", scheduleRerun);
+
+// 3. GitHub Turbo events
+document.addEventListener("turbo:load", scheduleRerun);
+document.addEventListener("turbo:frame-load", scheduleRerun);
+document.addEventListener("turbo:render", scheduleRerun);
+
+// Initial run
+if (document.readyState === "complete") {
+  scheduleRerun();
+} else {
+  window.addEventListener("load", scheduleRerun);
+}
