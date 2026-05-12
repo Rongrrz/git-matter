@@ -14,21 +14,19 @@ const CLASS_NAME = [
 type Props = {
   expanded: boolean;
   hiddenCount: number;
+  hasVisibleBelow: boolean;
   onToggle: () => void;
 };
 
 export function HiddenCommitsToggle(props: Props) {
-  const expandedClassName = props.expanded
-    ? "border-b border-[var(--borderColor-muted)]"
-    : "";
+  const borderStyle = props.hasVisibleBelow || props.expanded
+    ? { borderBottom: "1px solid var(--borderColor-muted)" }
+    : {};
 
   const commitText = pluralize("commit", props.hiddenCount);
 
   return (
-    <StyledButton
-      className={`${CLASS_NAME} ${expandedClassName}`}
-      onClick={props.onToggle}
-    >
+    <StyledButton className={CLASS_NAME} style={borderStyle} onClick={props.onToggle}>
       {props.expanded
         ? `Hide ${props.hiddenCount} ${commitText}`
         : `Show ${props.hiddenCount} hidden ${commitText}`}

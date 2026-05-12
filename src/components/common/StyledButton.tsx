@@ -1,8 +1,9 @@
-import { type ReactNode } from "react";
+import { type CSSProperties, type ReactNode } from "react";
 import { mergeClassNames } from "../../utils/mergeClassNames";
 
 type Props = {
   className?: string;
+  style?: CSSProperties;
   onClick: () => void;
   children: ReactNode;
 };
@@ -16,8 +17,9 @@ export function StyledButton(props: Props) {
         "cursor-pointer",
         "transition-[opacity,text-decoration] duration-150 ease-in-out",
         "hover:underline hover:opacity-100",
-        props.className, // Putting props.className last allows overrides
+        props.className,
       )}
+      style={props.style}
       onClick={props.onClick}
     >
       {props.children}
