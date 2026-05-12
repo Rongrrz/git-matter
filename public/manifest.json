@@ -5,7 +5,8 @@
   "content_scripts": [
     {
       "matches": ["https://github.com/*/*/commits/*"],
-      "js": ["loader.js"]
+      "js": ["loader.js"],
+      "css": ["assets/jsx-runtime.css"]
     }
   ],
   "web_accessible_resources": [
