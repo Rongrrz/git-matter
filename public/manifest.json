@@ -6,7 +6,7 @@
     {
       "matches": ["https://github.com/*/*/commits/*"],
       "js": ["loader.js"],
-      "css": ["assets/content.css"]
+      "css": ["assets/jsx-runtime.css"]
     }
   ],
   "web_accessible_resources": [

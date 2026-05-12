@@ -1,14 +1,9 @@
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import "./content.css";
+import "./index.css";
 import { HiddenCommitsToggle } from "./components/HiddenCommitsToggle";
 import { HiddenCommitStreak } from "./components/HiddenCommitsStreak";
-
-const filteredAuthors = new Set([
-  "dependabot[bot]",
-  "renovate[bot]",
-  "github-actions[bot]",
-]);
+import { botAuthors } from "./constants/botAuthors";
 
 type HiddenGroup = {
   timelineRow: HTMLElement;
@@ -30,7 +25,7 @@ function getCommitAuthor(row: HTMLElement): string | null {
   const links = Array.from(row.querySelectorAll<HTMLAnchorElement>("a"));
   for (const link of links) {
     const text = link.textContent?.trim().toLowerCase();
-    if (text && filteredAuthors.has(text)) return text;
+    if (text && botAuthors.has(text)) return text;
   }
 
   const authorLink = row.querySelector<HTMLAnchorElement>('a[href*="author="]');
@@ -125,7 +120,7 @@ function cleanupGitMatter() {
 
 function filterCommits() {
   const panels = Array.from(
-    document.querySelectorAll('div[class*="CommitGroup-module__panel"]'),
+    document.querySelectorAll<HTMLElement>('div[class*="CommitGroup-module__panel"]'),
   );
 
   let streak: HiddenGroup[] = [];
@@ -138,7 +133,10 @@ function filterCommits() {
     } else {
       const single = streak[0];
       single.timelineRow.style.display = "";
-      mountSingleToggle(single.hiddenRows);
+      const panel = single.hiddenRows[0].closest('div[class*="CommitGroup-module__panel"]') as HTMLElement | null;
+      if (panel) {
+        mountSingleToggle(panel, single.hiddenRows, false);
+      }
     }
 
     streak = [];
@@ -165,7 +163,7 @@ function filterCommits() {
     commitRows.forEach((row) => {
       const author = getCommitAuthor(row);
 
-      if (author && filteredAuthors.has(author)) {
+      if (author && botAuthors.has(author)) {
         hideRowImmediately(row);
         hiddenRows.push(row);
       }
@@ -187,18 +185,18 @@ function filterCommits() {
     flushStreak();
 
     if (hiddenRows.length > 0) {
-      mountSingleToggle(hiddenRows);
+      mountSingleToggle(panel, hiddenRows, visibleCount > 0);
     }
   });
 
   flushStreak();
 }
 
-function mountSingleToggle(hiddenRows: HTMLElement[]) {
+function mountSingleToggle(panel: HTMLElement, hiddenRows: HTMLElement[], hasVisibleBelow: boolean) {
   const container = document.createElement("div");
   container.className = "git-matter-toggle-root";
 
-  hiddenRows[0].parentElement?.insertBefore(container, hiddenRows[0]);
+  panel.insertBefore(container, panel.firstChild);
 
   const root = createRoot(container);
   mountedRoots.set(container, root);
@@ -210,6 +208,7 @@ function mountSingleToggle(hiddenRows: HTMLElement[]) {
       createElement(HiddenCommitsToggle, {
         expanded,
         hiddenCount: hiddenRows.length,
+        hasVisibleBelow,
         onToggle: () => {
           expanded = !expanded;
 

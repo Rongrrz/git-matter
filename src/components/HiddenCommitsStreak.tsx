@@ -1,4 +1,20 @@
-import { createElement } from "react";
+import { StyledButton } from "./common/StyledButton";
+import { pluralize } from "../utils/pluralize";
+
+const CLASS_NAME = [
+  "git-matter-streak",
+  "text-sm",
+  "font-medium",
+  "py-3",
+  "px-4",
+  "bg-(--bgColor-muted,rgba(110,118,129,0.1))",
+  "border",
+  "border-dashed",
+  "border-[var(--borderColor-muted)]",
+  "rounded-md",
+  "opacity-95",
+  "my-2",
+].join(" ");
 
 type Props = {
   expanded: boolean;
@@ -8,60 +24,14 @@ type Props = {
 };
 
 export function HiddenCommitStreak(props: Props) {
-  return createElement(
-    "button",
-    {
-      className: "git-matter-streak",
+  const commitText = pluralize("commit", props.hiddenCommitCount);
+  const dayText = pluralize("day", props.hiddenDayCount);
 
-      onClick: props.onToggle,
-
-      style: {
-        display: "flex",
-        alignItems: "center",
-
-        width: "100%",
-
-        margin: "8px 0",
-        padding: "10px 12px",
-
-        fontSize: "12px",
-        fontWeight: 500,
-
-        color: "var(--fgColor-muted)",
-
-        background:
-          "var(--bgColor-muted, rgba(110,118,129,0.1))",
-
-        border:
-          "1px dashed var(--borderColor-muted)",
-
-        borderRadius: "6px",
-
-        cursor: "pointer",
-
-        opacity: 0.95,
-
-        transition:
-          "opacity 0.15s ease, text-decoration 0.15s ease",
-      },
-
-      onMouseEnter: (e: MouseEvent) => {
-        const target = e.currentTarget as HTMLElement;
-
-        target.style.textDecoration = "underline";
-        target.style.opacity = "1";
-      },
-
-      onMouseLeave: (e: MouseEvent) => {
-        const target = e.currentTarget as HTMLElement;
-
-        target.style.textDecoration = "none";
-        target.style.opacity = "0.95";
-      },
-    },
-
-    props.expanded
-      ? `Hide ${props.hiddenCommitCount} commits across ${props.hiddenDayCount} days`
-      : `Show ${props.hiddenCommitCount} hidden commits across ${props.hiddenDayCount} days`,
+  return (
+    <StyledButton className={CLASS_NAME} onClick={props.onToggle}>
+      {props.expanded
+        ? `Hide ${props.hiddenCommitCount} ${commitText} across ${props.hiddenDayCount} ${dayText}`
+        : `Show ${props.hiddenCommitCount} hidden ${commitText} across ${props.hiddenDayCount} ${dayText}`}
+    </StyledButton>
   );
 }
