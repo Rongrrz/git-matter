@@ -3,12 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import "./content.css";
 import { HiddenCommitsToggle } from "./components/HiddenCommitsToggle";
 import { HiddenCommitStreak } from "./components/HiddenCommitsStreak";
-
-const filteredAuthors = new Set([
-  "dependabot[bot]",
-  "renovate[bot]",
-  "github-actions[bot]",
-]);
+import { botAuthors } from "./constants/botAuthors";
 
 type HiddenGroup = {
   timelineRow: HTMLElement;
@@ -30,7 +25,7 @@ function getCommitAuthor(row: HTMLElement): string | null {
   const links = Array.from(row.querySelectorAll<HTMLAnchorElement>("a"));
   for (const link of links) {
     const text = link.textContent?.trim().toLowerCase();
-    if (text && filteredAuthors.has(text)) return text;
+    if (text && botAuthors.has(text)) return text;
   }
 
   const authorLink = row.querySelector<HTMLAnchorElement>('a[href*="author="]');
@@ -165,7 +160,7 @@ function filterCommits() {
     commitRows.forEach((row) => {
       const author = getCommitAuthor(row);
 
-      if (author && filteredAuthors.has(author)) {
+      if (author && botAuthors.has(author)) {
         hideRowImmediately(row);
         hiddenRows.push(row);
       }
