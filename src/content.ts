@@ -1,6 +1,5 @@
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import "./content.css";
 import { HiddenCommitsToggle } from "./components/HiddenCommitsToggle";
 import { HiddenCommitStreak } from "./components/HiddenCommitsStreak";
 import { botAuthors } from "./constants/botAuthors";
