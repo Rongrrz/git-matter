@@ -5,11 +5,9 @@ const CLASS_NAME = [
   "text-xs",
   "font-normal",
   "leading-4",
-  "border-b",
-  "border-[var(--borderColor-muted)]",
   "opacity-90",
-  "py-2",
-  "px-3",
+  "py-1",
+  "px-2",
 ].join(" ");
 
 type Props = {
@@ -19,8 +17,15 @@ type Props = {
 };
 
 export function HiddenCommitsToggle(props: Props) {
+  const expandedClassName = props.expanded
+    ? "border-b border-[var(--borderColor-muted)]"
+    : "";
+
   return (
-    <StyledButton className={CLASS_NAME} onClick={props.onToggle}>
+    <StyledButton
+      className={`${CLASS_NAME} ${expandedClassName}`}
+      onClick={props.onToggle}
+    >
       {props.expanded
         ? `Hide ${props.hiddenCount} commits`
         : `Show ${props.hiddenCount} hidden commits`}

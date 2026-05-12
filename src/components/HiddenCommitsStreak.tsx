@@ -2,10 +2,10 @@ import { StyledButton } from "./common/StyledButton";
 
 const CLASS_NAME = [
   "git-matter-streak",
-  "text-xs",
+  "text-sm",
   "font-medium",
-  "py-2.5",
-  "px-3",
+  "py-3",
+  "px-4",
   "bg-(--bgColor-muted,rgba(110,118,129,0.1))",
   "border",
   "border-dashed",
