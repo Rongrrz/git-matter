@@ -1,4 +1,5 @@
 import { StyledButton } from "./common/StyledButton";
+import { pluralize } from "../utils/pluralize";
 
 const CLASS_NAME = [
   "git-matter-toggle",
@@ -21,14 +22,16 @@ export function HiddenCommitsToggle(props: Props) {
     ? "border-b border-[var(--borderColor-muted)]"
     : "";
 
+  const commitText = pluralize("commit", props.hiddenCount);
+
   return (
     <StyledButton
       className={`${CLASS_NAME} ${expandedClassName}`}
       onClick={props.onToggle}
     >
       {props.expanded
-        ? `Hide ${props.hiddenCount} commits`
-        : `Show ${props.hiddenCount} hidden commits`}
+        ? `Hide ${props.hiddenCount} ${commitText}`
+        : `Show ${props.hiddenCount} hidden ${commitText}`}
     </StyledButton>
   );
 }

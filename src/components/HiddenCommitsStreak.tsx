@@ -1,4 +1,5 @@
 import { StyledButton } from "./common/StyledButton";
+import { pluralize } from "../utils/pluralize";
 
 const CLASS_NAME = [
   "git-matter-streak",
@@ -23,11 +24,14 @@ type Props = {
 };
 
 export function HiddenCommitStreak(props: Props) {
+  const commitText = pluralize("commit", props.hiddenCommitCount);
+  const dayText = pluralize("day", props.hiddenDayCount);
+
   return (
     <StyledButton className={CLASS_NAME} onClick={props.onToggle}>
       {props.expanded
-        ? `Hide ${props.hiddenCommitCount} commits across ${props.hiddenDayCount} days`
-        : `Show ${props.hiddenCommitCount} hidden commits across ${props.hiddenDayCount} days`}
+        ? `Hide ${props.hiddenCommitCount} ${commitText} across ${props.hiddenDayCount} ${dayText}`
+        : `Show ${props.hiddenCommitCount} hidden ${commitText} across ${props.hiddenDayCount} ${dayText}`}
     </StyledButton>
   );
 }
