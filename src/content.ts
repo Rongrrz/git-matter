@@ -295,8 +295,8 @@ function scheduleRerun() {
 
 // 1. Observe DOM changes, crucial for client-side navigation
 const observer = new MutationObserver((mutations) => {
-  const hasNewCommits = mutations.some((m) =>
-    Array.from(m.addedNodes).some(
+  const hasNewCommits = mutations.some((mutation) =>
+    Array.from(mutation.addedNodes).some(
       (node) =>
         node instanceof HTMLElement &&
         node.querySelector?.('[data-testid="commit-row-item"]'),
@@ -312,14 +312,6 @@ observer.observe(document.body, {
   childList: true,
   subtree: true,
 });
-
-// 2. Browser Back/Forward buttons
-window.addEventListener("popstate", scheduleRerun);
-
-// 3. GitHub Turbo events
-document.addEventListener("turbo:load", scheduleRerun);
-document.addEventListener("turbo:frame-load", scheduleRerun);
-document.addEventListener("turbo:render", scheduleRerun);
 
 // Initial run
 if (document.readyState === "complete") {
