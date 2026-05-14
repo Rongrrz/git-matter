@@ -1,9 +1,9 @@
 import { debounce } from "../utils/debounce";
 import { runOnce } from "../utils/runOnce";
-import { createDirtyTracker } from "../utils/dirtyTracker";
+import { createDirtyTracker } from "../utils/createDirtyTracker";
 import { hideRowImmediately } from "./commitRowAnimations";
 import { commitPageSelectors } from "./selectors";
-import { isAllBotCommitRow } from "./getCommitAuthor";
+import { isAllBotCommitRow } from "./commitAuthors";
 import type { HiddenGroup } from "./types";
 import {
   mountedRoots,

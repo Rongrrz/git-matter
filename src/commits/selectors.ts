@@ -7,7 +7,7 @@ const commitGroupPanelSelector = 'div[class*="CommitGroup-module__panel"]';
 const gitMatterCommitComponent =
   ".git-matter-toggle-root, .git-matter-streak-root, .git-matter-processed";
 
-const commitRowAria = '[aria-label^="commits by "]';
+const commitAuthorAriaSelector = '[aria-label^="commits by "]';
 
 export const commitPageSelectors = {
   commitRow: commitRow,
@@ -15,5 +15,5 @@ export const commitPageSelectors = {
   rowsToReset: allGitHubRows,
   commitGroupPanel: commitGroupPanelSelector,
   gitMatterCommitComponent: gitMatterCommitComponent,
-  commitRowAria: commitRowAria,
+  commitRowAria: commitAuthorAriaSelector,
 };

@@ -1,7 +1,7 @@
 import { botAuthors } from "../constants/botAuthors";
 import { commitPageSelectors } from "./selectors";
 
-function getCommitAuthorsHelper(row: HTMLElement): string[] {
+function extractAuthorsFromRow(row: HTMLElement): string[] {
   const result = new Set<string>();
 
   // Commit author information can be found in an aria-label.
@@ -28,7 +28,7 @@ function getCommitAuthorsHelper(row: HTMLElement): string[] {
 }
 
 export function getCommitAuthors(row: HTMLElement): string[] {
-  return getCommitAuthorsHelper(row).map((author) =>
+  return extractAuthorsFromRow(row).map((author) =>
     author.trim().toLowerCase(),
   );
 }

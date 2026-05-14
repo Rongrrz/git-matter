@@ -1,4 +1,4 @@
-function animateRowHelper(
+function animateRow(
   row: HTMLElement,
   from: Keyframe,
   to: Keyframe,
@@ -17,7 +17,7 @@ function animateRowHelper(
 export function revealRow(row: HTMLElement) {
   row.style.display = "";
 
-  animateRowHelper(
+  animateRow(
     row,
     { opacity: 0, transform: "translateY(-6px)" },
     { opacity: 1, transform: "translateY(0)" },
@@ -26,7 +26,7 @@ export function revealRow(row: HTMLElement) {
 }
 
 export function hideRow(row: HTMLElement) {
-  animateRowHelper(
+  animateRow(
     row,
     { opacity: 1, transform: "translateY(0)" },
     { opacity: 0, transform: "translateY(-6px)" },
