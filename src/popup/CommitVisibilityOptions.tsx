@@ -44,9 +44,7 @@ export function CommitVisibilityOptions(props: Props) {
             />
             <div>
               <div className="font-medium">{option.label}</div>
-              <div className={`text-xs ${props.mutedTextClassName}`}>
-                {option.description}
-              </div>
+              <div className={`text-xs ${props.mutedTextClassName}`}>{option.description}</div>
             </div>
           </label>
         ))}

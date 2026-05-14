@@ -17,9 +17,7 @@ export function getCommitAuthors(row: HTMLElement): string[] {
     if (author) authors.add(author);
   }
 
-  return Array.from(authors, (author) => author.trim().toLowerCase()).filter(
-    Boolean,
-  );
+  return Array.from(authors, (author) => author.trim().toLowerCase()).filter(Boolean);
 }
 
 export function shouldFilterCommit(authors: string[]): boolean {

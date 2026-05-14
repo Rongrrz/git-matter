@@ -78,10 +78,7 @@ function observeNavigation(onChange: () => void): void {
   window.addEventListener("popstate", onChange);
 }
 
-function applyVisibilityToAddedRows(
-  nodes: NodeList,
-  mode: CommitVisibilityMode,
-): boolean {
+function applyVisibilityToAddedRows(nodes: NodeList, mode: CommitVisibilityMode): boolean {
   let foundCommitPageContent = false;
 
   nodes.forEach((node) => {
@@ -126,7 +123,7 @@ function removedCommitPageContent(nodes: NodeList): boolean {
 function isGitMatterNode(node: HTMLElement): boolean {
   return Boolean(
     node.closest(`[${GIT_MATTER_CLASSES.componentMarker}]`) ||
-      node.matches(`[${GIT_MATTER_CLASSES.componentMarker}]`),
+    node.matches(`[${GIT_MATTER_CLASSES.componentMarker}]`),
   );
 }
 

@@ -1,14 +1,7 @@
 import { pluralize } from "../utils/pluralize";
 import { HiddenCommitsButton } from "./HiddenCommitsButton";
 
-const CLASS_NAME = [
-  "text-xs",
-  "font-normal",
-  "leading-4",
-  "opacity-90",
-  "py-1",
-  "px-2",
-].join(" ");
+const CLASS_NAME = ["text-xs", "font-normal", "leading-4", "opacity-90", "py-1", "px-2"].join(" ");
 
 type Props = {
   expanded: boolean;

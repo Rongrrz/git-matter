@@ -3,19 +3,13 @@ import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
 import type { CommitItem, CommitPanelItem } from "./types";
 
 export function collectCommitPageItems(): CommitPanelItem[] {
-  const panels = document.querySelectorAll<HTMLElement>(
-    commitPageSelectors.commitGroupPanel,
-  );
+  const panels = document.querySelectorAll<HTMLElement>(commitPageSelectors.commitGroupPanel);
 
   return Array.from(panels).flatMap((panel) => {
-    const timelineRow = panel.closest<HTMLElement>(
-      commitPageSelectors.timelineRow,
-    );
+    const timelineRow = panel.closest<HTMLElement>(commitPageSelectors.timelineRow);
     if (!timelineRow) return [];
 
-    const commitRows = panel.querySelectorAll<HTMLElement>(
-      commitPageSelectors.commitRow,
-    );
+    const commitRows = panel.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow);
     const commits: CommitItem[] = Array.from(commitRows, (row) => {
       const authors = getCommitAuthors(row);
       return {
@@ -38,11 +32,7 @@ export function collectCommitRowsFromNode(node: HTMLElement): HTMLElement[] {
     rows.push(node);
   }
 
-  rows.push(
-    ...Array.from(
-      node.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow),
-    ),
-  );
+  rows.push(...Array.from(node.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow)));
 
   return rows;
 }

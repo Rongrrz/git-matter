@@ -1,14 +1,8 @@
 import type { CommitVisibilityMode } from "../types";
 import { runOnce } from "../utils/runOnce";
 import { collectCommitPageItems } from "./commitPageItems";
-import {
-  applyCommitVisibility,
-  resetAllCommitVisibility,
-} from "./commitVisibility";
-import {
-  clearHiddenCommitControls,
-  renderHiddenCommitControls,
-} from "./hiddenCommitControls";
+import { applyCommitVisibility, resetAllCommitVisibility } from "./commitVisibility";
+import { clearHiddenCommitControls, renderHiddenCommitControls } from "./hiddenCommitControls";
 import { observeCommitPage } from "./commitPageObserver";
 
 let commitVisibilityMode: CommitVisibilityMode = "hide";
@@ -39,11 +33,7 @@ export function runCommitFiltering(): void {
 }
 
 export const initializeCommitFiltering = runOnce(() => {
-  observeCommitPage(
-    () => commitVisibilityMode,
-    reconcileCommitPage,
-    clearInjectedUi,
-  );
+  observeCommitPage(() => commitVisibilityMode, reconcileCommitPage, clearInjectedUi);
 
   if (document.readyState === "loading") {
     window.addEventListener("DOMContentLoaded", reconcileCommitPage, {

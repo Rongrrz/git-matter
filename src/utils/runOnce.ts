@@ -1,6 +1,4 @@
-export function runOnce<TArgs extends unknown[]>(
-  callback: (...args: TArgs) => void,
-) {
+export function runOnce<TArgs extends unknown[]>(callback: (...args: TArgs) => void) {
   let hasRun = false;
 
   return (...args: TArgs) => {

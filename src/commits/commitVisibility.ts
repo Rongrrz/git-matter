@@ -29,10 +29,7 @@ export function revealRow(row: HTMLElement): void {
   row.style.display = "";
 }
 
-export function applyCommitVisibility(
-  items: CommitPanelItem[],
-  mode: CommitVisibilityMode,
-): void {
+export function applyCommitVisibility(items: CommitPanelItem[], mode: CommitVisibilityMode): void {
   items.forEach((item) => {
     resetRow(item.timelineRow);
 
@@ -42,10 +39,7 @@ export function applyCommitVisibility(
   });
 }
 
-export function applySingleCommitVisibility(
-  commit: CommitItem,
-  mode: CommitVisibilityMode,
-): void {
+export function applySingleCommitVisibility(commit: CommitItem, mode: CommitVisibilityMode): void {
   resetRow(commit.row);
 
   if (!commit.filtered || mode === "off") return;
@@ -59,7 +53,5 @@ export function applySingleCommitVisibility(
 }
 
 export function resetAllCommitVisibility(): void {
-  document
-    .querySelectorAll<HTMLElement>(commitPageSelectors.rowsToReset)
-    .forEach(resetRow);
+  document.querySelectorAll<HTMLElement>(commitPageSelectors.rowsToReset).forEach(resetRow);
 }

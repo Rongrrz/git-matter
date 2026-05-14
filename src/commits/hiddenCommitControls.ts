@@ -27,9 +27,7 @@ export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
     if (streak.length === 1) {
       const [group] = streak;
       revealRow(group.timelineRow);
-      const panel = group.hiddenRows[0].closest<HTMLElement>(
-        commitPageSelectors.commitGroupPanel,
-      );
+      const panel = group.hiddenRows[0].closest<HTMLElement>(commitPageSelectors.commitGroupPanel);
       if (panel) {
         mountToggle(panel, group.hiddenRows, false);
       }
@@ -42,9 +40,7 @@ export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
   }
 
   items.forEach((item) => {
-    const hiddenRows = item.commits
-      .filter((commit) => commit.filtered)
-      .map((commit) => commit.row);
+    const hiddenRows = item.commits.filter((commit) => commit.filtered).map((commit) => commit.row);
     const visibleCount = item.commits.length - hiddenRows.length;
 
     if (hiddenRows.length === 0) {
@@ -67,11 +63,7 @@ export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
   flushStreak();
 }
 
-function mountToggle(
-  panel: HTMLElement,
-  hiddenRows: HTMLElement[],
-  hasVisibleBelow: boolean,
-): void {
+function mountToggle(panel: HTMLElement, hiddenRows: HTMLElement[], hasVisibleBelow: boolean): void {
   const { container, root } = createReactMount("git-matter-toggle-root");
   container.dataset.gitMatterComponent = "";
   controls.add({ container, root });
@@ -107,15 +99,9 @@ function mountStreak(groups: HiddenPanelGroup[]): void {
   const { container, root } = createReactMount("git-matter-streak-root");
   container.dataset.gitMatterComponent = "";
   controls.add({ container, root });
-  firstGroup.timelineRow.parentElement?.insertBefore(
-    container,
-    firstGroup.timelineRow,
-  );
+  firstGroup.timelineRow.parentElement?.insertBefore(container, firstGroup.timelineRow);
 
-  const hiddenCommitCount = groups.reduce(
-    (total, group) => total + group.hiddenRows.length,
-    0,
-  );
+  const hiddenCommitCount = groups.reduce((total, group) => total + group.hiddenRows.length, 0);
 
   let expanded = false;
   const render = () => {
