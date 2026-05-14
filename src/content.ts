@@ -4,6 +4,7 @@ import "./index.css";
 import { HiddenCommitsToggle } from "./components/HiddenCommitsToggle";
 import { HiddenCommitStreak } from "./components/HiddenCommitsStreak";
 import { botAuthors } from "./constants/botAuthors";
+import { debounce } from "./utils/debounce";
 
 type HiddenGroup = {
   timelineRow: HTMLElement;
@@ -120,7 +121,9 @@ function cleanupGitMatter() {
 
 function filterCommits() {
   const panels = Array.from(
-    document.querySelectorAll<HTMLElement>('div[class*="CommitGroup-module__panel"]'),
+    document.querySelectorAll<HTMLElement>(
+      'div[class*="CommitGroup-module__panel"]',
+    ),
   );
 
   let streak: HiddenGroup[] = [];
@@ -133,7 +136,9 @@ function filterCommits() {
     } else {
       const single = streak[0];
       single.timelineRow.style.display = "";
-      const panel = single.hiddenRows[0].closest('div[class*="CommitGroup-module__panel"]') as HTMLElement | null;
+      const panel = single.hiddenRows[0].closest(
+        'div[class*="CommitGroup-module__panel"]',
+      ) as HTMLElement | null;
       if (panel) {
         mountSingleToggle(panel, single.hiddenRows, false);
       }
@@ -192,7 +197,11 @@ function filterCommits() {
   flushStreak();
 }
 
-function mountSingleToggle(panel: HTMLElement, hiddenRows: HTMLElement[], hasVisibleBelow: boolean) {
+function mountSingleToggle(
+  panel: HTMLElement,
+  hiddenRows: HTMLElement[],
+  hasVisibleBelow: boolean,
+) {
   const container = document.createElement("div");
   container.className = "git-matter-toggle-root";
 
@@ -281,26 +290,26 @@ function mountHiddenStreak(groups: HiddenGroup[]) {
   render();
 }
 
-// Execution Logic
-let rerunTimeout: ReturnType<typeof setTimeout>;
+let scheduleRerun = debounce(() => {
+  cleanupGitMatter();
+  filterCommits();
+}, 300);
 
-function scheduleRerun() {
-  clearTimeout(rerunTimeout);
-
-  rerunTimeout = setTimeout(() => {
-    cleanupGitMatter();
-    filterCommits();
-  }, 300);
-}
-
-// 1. Observe DOM changes, crucial for client-side navigation
+// Observe DOM changes to re-apply filtering when new commits are loaded
+// this occurs when the user clicks previous or next page.
 const observer = new MutationObserver((mutations) => {
   const hasNewCommits = mutations.some((mutation) =>
-    Array.from(mutation.addedNodes).some(
-      (node) =>
-        node instanceof HTMLElement &&
-        node.querySelector?.('[data-testid="commit-row-item"]'),
-    ),
+    Array.from(mutation.addedNodes).some((node) => {
+      if (!(node instanceof HTMLElement)) return false;
+
+      // This node is something that WE (the extension) injected,
+      // ignore it to prevent infinite loops.
+      if (node.closest("[data-git-matter-component]")) {
+        return false;
+      }
+
+      return node.querySelector<HTMLElement>('[data-testid="commit-row-item"]');
+    }),
   );
 
   if (hasNewCommits) {
@@ -314,8 +323,6 @@ observer.observe(document.body, {
 });
 
 // Initial run
-if (document.readyState === "complete") {
-  scheduleRerun();
-} else {
-  window.addEventListener("load", scheduleRerun);
-}
+document.readyState === "loading"
+  ? window.addEventListener("DOMContentLoaded", scheduleRerun, { once: true })
+  : scheduleRerun();
