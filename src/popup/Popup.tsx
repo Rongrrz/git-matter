@@ -10,28 +10,25 @@ import {
   getStoredPopupThemeMode,
   setStoredCommitVisibilityMode,
   setStoredPopupThemeMode,
-} from "../utils/storage";
+} from "../storage";
 import { CommitVisibilityOptions } from "./CommitVisibilityOptions";
 import { getPopupThemeClasses, resolvePopupColorMode } from "./githubTheme";
 import { ThemeModeToggle } from "./ThemeModeToggle";
 
 export function Popup() {
   const [mode, setMode] = useState<CommitVisibilityMode>(DEFAULT_COMMIT_VISIBILITY_MODE);
-  const [themeMode, setThemeMode] = useState<PopupThemeMode>(
-    DEFAULT_POPUP_THEME_MODE,
-  );
+  const [themeMode, setThemeMode] = useState<PopupThemeMode>(DEFAULT_POPUP_THEME_MODE);
   const [loading, setLoading] = useState(true);
   const theme = getPopupThemeClasses(resolvePopupColorMode(themeMode));
 
   useEffect(() => {
-    Promise.all([
-      getStoredCommitVisibilityMode(),
-      getStoredPopupThemeMode(),
-    ]).then(([storedMode, storedThemeMode]) => {
-      setMode(storedMode);
-      setThemeMode(storedThemeMode);
-      setLoading(false);
-    });
+    Promise.all([getStoredCommitVisibilityMode(), getStoredPopupThemeMode()]).then(
+      ([storedMode, storedThemeMode]) => {
+        setMode(storedMode);
+        setThemeMode(storedThemeMode);
+        setLoading(false);
+      },
+    );
   }, []);
 
   async function handleModeChange(newMode: CommitVisibilityMode) {

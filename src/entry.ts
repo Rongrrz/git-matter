@@ -1,6 +1,6 @@
 import "./index.css";
 import { initializeCommitFiltering, runCommitFiltering, setCommitVisibilityMode } from "./commits";
-import { getStoredCommitVisibilityMode } from "./utils/storage";
+import { getStoredCommitVisibilityMode } from "./storage";
 import type { ExtensionMessage } from "./types";
 
 async function initialize(): Promise<void> {

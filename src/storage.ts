@@ -5,7 +5,7 @@ import {
   DEFAULT_COMMIT_VISIBILITY_MODE,
   DEFAULT_POPUP_THEME_MODE,
   POPUP_THEME_MODE_STORAGE_KEY,
-} from "../types";
+} from "./types";
 
 export async function getStoredCommitVisibilityMode(): Promise<CommitVisibilityMode> {
   const result = await readStorage(COMMIT_VISIBILITY_MODE_STORAGE_KEY);
@@ -35,9 +35,7 @@ export async function getStoredPopupThemeMode(): Promise<PopupThemeMode> {
   return DEFAULT_POPUP_THEME_MODE;
 }
 
-export async function setStoredPopupThemeMode(
-  mode: PopupThemeMode,
-): Promise<void> {
+export async function setStoredPopupThemeMode(mode: PopupThemeMode): Promise<void> {
   await chrome.storage.local.set({
     [POPUP_THEME_MODE_STORAGE_KEY]: mode,
   });
