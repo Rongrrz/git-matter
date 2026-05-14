@@ -11,6 +11,7 @@ type Props = {
 export function StyledButton(props: Props) {
   return (
     <button
+      data-git-matter-component
       className={mergeClassNames(
         "flex w-full items-center",
         "text-(--fgColor-muted)",
