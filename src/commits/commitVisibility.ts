@@ -1,5 +1,5 @@
 import type { CommitVisibilityMode } from "../types";
-import { commitPageSelectors, GIT_MATTER_CLASSES } from "./selectors";
+import { CommitPageSelectors, GitMatterSelectosr } from "./selectors";
 import type { CommitItem, CommitPanelItem } from "./types";
 
 function stopRowAnimations(row: HTMLElement): void {
@@ -9,18 +9,18 @@ function stopRowAnimations(row: HTMLElement): void {
 export function resetRow(row: HTMLElement): void {
   stopRowAnimations(row);
   row.style.display = "";
-  row.classList.remove(GIT_MATTER_CLASSES.dimmed);
+  row.classList.remove(GitMatterSelectosr.dimmed);
 }
 
 export function dimRow(row: HTMLElement): void {
   stopRowAnimations(row);
   row.style.display = "";
-  row.classList.add(GIT_MATTER_CLASSES.dimmed);
+  row.classList.add(GitMatterSelectosr.dimmed);
 }
 
 export function hideRow(row: HTMLElement): void {
   stopRowAnimations(row);
-  row.classList.remove(GIT_MATTER_CLASSES.dimmed);
+  row.classList.remove(GitMatterSelectosr.dimmed);
   row.style.display = "none";
 }
 
@@ -53,5 +53,5 @@ export function applySingleCommitVisibility(commit: CommitItem, mode: CommitVisi
 }
 
 export function resetAllCommitVisibility(): void {
-  document.querySelectorAll<HTMLElement>(commitPageSelectors.rowsToReset).forEach(resetRow);
+  document.querySelectorAll<HTMLElement>(CommitPageSelectors.allCommitPageRows).forEach(resetRow);
 }

@@ -1,5 +1,5 @@
 import type { CommitVisibilityMode } from "../types";
-import { commitPageSelectors, GIT_MATTER_CLASSES } from "./selectors";
+import { CommitPageSelectors, GitMatterSelectosr } from "./selectors";
 import { collectCommitRowsFromNode } from "./commitPageItems";
 import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
 import { applySingleCommitVisibility } from "./commitVisibility";
@@ -112,9 +112,9 @@ function removedCommitPageContent(nodes: NodeList): boolean {
     if (isGitMatterNode(node)) return false;
 
     return (
-      node.matches(commitPageSelectors.commitRow) ||
-      node.matches(commitPageSelectors.commitGroupPanel) ||
-      node.matches(commitPageSelectors.timelineRow) ||
+      node.matches(CommitPageSelectors.commitRow) ||
+      node.matches(CommitPageSelectors.commitGroupPanel) ||
+      node.matches(CommitPageSelectors.timelineRow) ||
       containsCommitPageStructure(node)
     );
   });
@@ -122,8 +122,8 @@ function removedCommitPageContent(nodes: NodeList): boolean {
 
 function isGitMatterNode(node: HTMLElement): boolean {
   return Boolean(
-    node.closest(`[${GIT_MATTER_CLASSES.componentMarker}]`) ||
-    node.matches(`[${GIT_MATTER_CLASSES.componentMarker}]`),
+    node.closest(`[${GitMatterSelectosr.componentMarker}]`) ||
+    node.matches(`[${GitMatterSelectosr.componentMarker}]`),
   );
 }
 
@@ -131,9 +131,9 @@ function containsCommitPageStructure(node: HTMLElement): boolean {
   return Boolean(
     node.querySelector(
       [
-        commitPageSelectors.commitRow,
-        commitPageSelectors.commitGroupPanel,
-        commitPageSelectors.timelineRow,
+        CommitPageSelectors.commitRow,
+        CommitPageSelectors.commitGroupPanel,
+        CommitPageSelectors.timelineRow,
       ].join(", "),
     ),
   );

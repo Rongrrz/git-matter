@@ -1,10 +1,10 @@
 import { botAuthors } from "../constants/botAuthors";
-import { commitPageSelectors } from "./selectors";
+import { CommitPageSelectors } from "./selectors";
 
 export function getCommitAuthors(row: HTMLElement): string[] {
   const authors = new Set<string>();
 
-  const ariaElement = row.querySelector(commitPageSelectors.commitAuthorAria);
+  const ariaElement = row.querySelector(CommitPageSelectors.commitAuthorAria);
   const ariaAuthor = ariaElement?.getAttribute("aria-label");
   if (ariaAuthor) {
     authors.add(ariaAuthor.replace("commits by ", ""));

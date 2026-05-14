@@ -1,15 +1,15 @@
-import { commitPageSelectors } from "./selectors";
+import { CommitPageSelectors } from "./selectors";
 import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
 import type { CommitItem, CommitPanelItem } from "./types";
 
 export function collectCommitPageItems(): CommitPanelItem[] {
-  const panels = document.querySelectorAll<HTMLElement>(commitPageSelectors.commitGroupPanel);
+  const panels = document.querySelectorAll<HTMLElement>(CommitPageSelectors.commitGroupPanel);
 
   return Array.from(panels).flatMap((panel) => {
-    const timelineRow = panel.closest<HTMLElement>(commitPageSelectors.timelineRow);
+    const timelineRow = panel.closest<HTMLElement>(CommitPageSelectors.timelineRow);
     if (!timelineRow) return [];
 
-    const commitRows = panel.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow);
+    const commitRows = panel.querySelectorAll<HTMLElement>(CommitPageSelectors.commitRow);
     const commits: CommitItem[] = Array.from(commitRows, (row) => {
       const authors = getCommitAuthors(row);
       return {
@@ -28,11 +28,11 @@ export function collectCommitPageItems(): CommitPanelItem[] {
 export function collectCommitRowsFromNode(node: HTMLElement): HTMLElement[] {
   const rows: HTMLElement[] = [];
 
-  if (node.matches(commitPageSelectors.commitRow)) {
+  if (node.matches(CommitPageSelectors.commitRow)) {
     rows.push(node);
   }
 
-  rows.push(...Array.from(node.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow)));
+  rows.push(...Array.from(node.querySelectorAll<HTMLElement>(CommitPageSelectors.commitRow)));
 
   return rows;
 }
