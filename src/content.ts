@@ -1,7 +1,7 @@
 import "./index.css";
-import { startFilteringCommits } from "./commits";
+import { initializeCommitFiltering } from "./commits";
 
-startFilteringCommits();
+initializeCommitFiltering();
 
-// TODO: Remove
+// TODO: Remove later
 console.log("Git Matter content script loaded, V2");

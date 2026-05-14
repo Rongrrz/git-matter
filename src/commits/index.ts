@@ -1,55 +1,39 @@
-import { createElement } from "react";
-import { createRoot, type Root } from "react-dom/client";
-import { HiddenCommitsToggle } from "../components/HiddenCommitsToggle";
-import { HiddenCommitStreak } from "../components/HiddenCommitsStreak";
-import { botAuthors } from "../constants/botAuthors";
 import { debounce } from "../utils/debounce";
 import { runOnce } from "../utils/runOnce";
-import { getCommitAuthor } from "./getCommitAuthor";
 import { createDirtyTracker } from "../utils/dirtyTracker";
-import { hideRow, hideRowImmediately, revealRow } from "./commitRowAnimations";
+import { hideRowImmediately } from "./commitRowAnimations";
+import { commitPageSelectors } from "./selectors";
+import { isAllBotCommitRow } from "./getCommitAuthor";
+import type { HiddenGroup } from "./types";
+import {
+  mountedRoots,
+  mountHiddenCommitStreak,
+  mountHiddenCommitToggle,
+} from "./hiddenCommit";
 
-type HiddenGroup = {
-  timelineRow: HTMLElement;
-  hiddenRows: HTMLElement[];
-};
-
-// Track roots globally so we can properly unmount them during cleanup
-const mountedRoots = new Map<HTMLElement, Root>();
-
-function cleanupGitMatter() {
-  // 1. Properly unmount React roots before removing DOM nodes
-  mountedRoots.forEach((root) => {
-    try {
-      root.unmount();
-    } catch {
-      /* root might already be gone */
-    }
-  });
-
+function cleanup(): void {
+  // Internally:
+  // 1. Unmount React roots before removing DOM nodes
+  // 2. Remove injected GitMatter elements
+  // 3. Reset visibility of all GitHub rows
+  mountedRoots.forEach((root) => root.unmount());
   mountedRoots.clear();
 
-  // 2. Remove injected elements
-  document
-    .querySelectorAll(
-      ".git-matter-toggle-root, .git-matter-streak-root, .git-matter-processed",
-    )
-    .forEach((el) => el.remove());
+  const injectedElements = document.querySelectorAll(
+    commitPageSelectors.gitMatterCommitComponent,
+  );
+  injectedElements.forEach((element) => element.remove());
 
-  // 3. Reset visibility
-  document
-    .querySelectorAll<HTMLElement>(
-      '[data-testid="commit-row-item"], div[class*="TimelineRow-module__timelineRowItem"]',
-    )
-    .forEach((row) => {
-      row.style.display = "";
-    });
+  const rowsToReset = document.querySelectorAll<HTMLElement>(
+    commitPageSelectors.rowsToReset,
+  );
+  rowsToReset.forEach((row) => (row.style.display = ""));
 }
 
 function filterCommits() {
   const panels = Array.from(
     document.querySelectorAll<HTMLElement>(
-      'div[class*="CommitGroup-module__panel"]',
+      commitPageSelectors.commitGroupPanel,
     ),
   );
 
@@ -59,15 +43,15 @@ function filterCommits() {
     if (streak.length === 0) return;
 
     if (streak.length >= 2) {
-      mountHiddenStreak(streak);
+      mountHiddenCommitStreak(streak);
     } else {
       const single = streak[0];
       single.timelineRow.style.display = "";
       const panel = single.hiddenRows[0].closest(
-        'div[class*="CommitGroup-module__panel"]',
+        commitPageSelectors.commitGroupPanel,
       ) as HTMLElement | null;
       if (panel) {
-        mountSingleToggle(panel, single.hiddenRows, false);
+        mountHiddenCommitToggle(panel, single.hiddenRows, false);
       }
     }
 
@@ -75,27 +59,23 @@ function filterCommits() {
   }
 
   panels.forEach((panel) => {
-    // If already processed and not cleaned up, skip
+    // Skip if processed but not cleaned up
     if (panel.querySelector(".git-matter-processed")) return;
 
     const timelineRow = panel.closest(
-      'div[class*="TimelineRow-module__timelineRowItem"]',
+      commitPageSelectors.timelineRow,
     ) as HTMLElement | null;
-
     if (!timelineRow) return;
 
     const commitRows = Array.from(
-      panel.querySelectorAll<HTMLElement>('[data-testid="commit-row-item"]'),
+      panel.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow),
     );
-
     if (commitRows.length === 0) return;
 
     const hiddenRows: HTMLElement[] = [];
-
     commitRows.forEach((row) => {
-      const author = getCommitAuthor(row);
-
-      if (author && botAuthors.has(author)) {
+      // We don't want to hide: UserA and Copilot coauthored commit.
+      if (isAllBotCommitRow(row)) {
         hideRowImmediately(row);
         hiddenRows.push(row);
       }
@@ -117,99 +97,16 @@ function filterCommits() {
     flushStreak();
 
     if (hiddenRows.length > 0) {
-      mountSingleToggle(panel, hiddenRows, visibleCount > 0);
+      mountHiddenCommitToggle(panel, hiddenRows, true);
     }
   });
 
   flushStreak();
 }
 
-function mountSingleToggle(
-  panel: HTMLElement,
-  hiddenRows: HTMLElement[],
-  hasVisibleBelow: boolean,
-) {
-  const container = document.createElement("div");
-  container.className = "git-matter-toggle-root";
-
-  panel.insertBefore(container, panel.firstChild);
-
-  const root = createRoot(container);
-  mountedRoots.set(container, root);
-
-  let expanded = false;
-
-  const render = () => {
-    root.render(
-      createElement(HiddenCommitsToggle, {
-        expanded,
-        hiddenCount: hiddenRows.length,
-        hasVisibleBelow,
-        onToggle: () => {
-          expanded = !expanded;
-
-          hiddenRows.forEach((row) => {
-            expanded ? revealRow(row) : hideRow(row);
-          });
-
-          render();
-        },
-      }),
-    );
-  };
-
-  render();
-}
-
-function mountHiddenStreak(groups: HiddenGroup[]) {
-  const firstRow = groups[0].timelineRow;
-
-  const container = document.createElement("div");
-  container.className = "git-matter-streak-root";
-
-  firstRow.parentElement?.insertBefore(container, firstRow);
-
-  const root = createRoot(container);
-  mountedRoots.set(container, root);
-
-  const totalHiddenCommits = groups.reduce(
-    (sum, group) => sum + group.hiddenRows.length,
-    0,
-  );
-
-  let expanded = false;
-
-  const render = () => {
-    root.render(
-      createElement(HiddenCommitStreak, {
-        expanded,
-        hiddenCommitCount: totalHiddenCommits,
-        hiddenDayCount: groups.length,
-        onToggle: () => {
-          expanded = !expanded;
-
-          groups.forEach((group) => {
-            expanded
-              ? revealRow(group.timelineRow)
-              : hideRow(group.timelineRow);
-
-            group.hiddenRows.forEach((row) => {
-              expanded ? revealRow(row) : hideRow(row);
-            });
-          });
-
-          render();
-        },
-      }),
-    );
-  };
-
-  render();
-}
-
-export const startFilteringCommits = runOnce(() => {
+export const initializeCommitFiltering = runOnce(() => {
   let scheduleRerun = debounce(() => {
-    cleanupGitMatter();
+    cleanup();
     filterCommits();
   }, 300);
 
@@ -243,7 +140,7 @@ export const startFilteringCommits = runOnce(() => {
     subtree: true,
   });
 
-  // Initial run
+  // This does our initial run
   document.readyState === "loading"
     ? window.addEventListener("DOMContentLoaded", scheduleRerun, { once: true })
     : scheduleRerun();

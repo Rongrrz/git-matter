@@ -1,6 +1,7 @@
 import { StyledButton } from "./common/StyledButton";
 import { pluralize } from "../utils/pluralize";
 
+// TODO: Refactor CSS (background for buttons should just be transparent)
 const CLASS_NAME = [
   "git-matter-streak",
   "text-sm",
