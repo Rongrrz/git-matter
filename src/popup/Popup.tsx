@@ -3,16 +3,29 @@ import {
   type FilteredCommitDisplayMode,
   DEFAULT_COMMIT_DISPLAY_MODE,
 } from "../types";
-import { getStoredCommitDisplayMode, setStoredCommitDisplayMode } from "../utils/storage";
+import {
+  getStoredCommitDisplayMode,
+  setStoredCommitDisplayMode,
+} from "../utils/storage";
 
-const MODES: { value: FilteredCommitDisplayMode; label: string; description: string }[] = [
+const MODES: {
+  value: FilteredCommitDisplayMode;
+  label: string;
+  description: string;
+}[] = [
   { value: "off", label: "Off", description: "Show all commits normally" },
-  { value: "dim", label: "Dim", description: "Keep bot commits visible but dimmed" },
+  {
+    value: "dim",
+    label: "Dim",
+    description: "Keep bot commits visible but dimmed",
+  },
   { value: "hide", label: "Hide", description: "Hide bot commits completely" },
 ];
 
 export function Popup() {
-  const [mode, setMode] = useState<FilteredCommitDisplayMode>(DEFAULT_COMMIT_DISPLAY_MODE);
+  const [mode, setMode] = useState<FilteredCommitDisplayMode>(
+    DEFAULT_COMMIT_DISPLAY_MODE,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,9 +43,7 @@ export function Popup() {
 
   if (loading) {
     return (
-      <div className="p-4 text-sm text-[var(--fgColor-muted)]">
-        Loading...
-      </div>
+      <div className="p-4 text-sm text-[var(--fgColor-muted)]">Loading...</div>
     );
   }
 
@@ -72,7 +83,9 @@ export function Popup() {
   );
 }
 
-async function sendCommitDisplayModeToActiveTab(mode: FilteredCommitDisplayMode) {
+async function sendCommitDisplayModeToActiveTab(
+  mode: FilteredCommitDisplayMode,
+) {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
 

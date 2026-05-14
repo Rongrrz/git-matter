@@ -4,10 +4,10 @@ import { createReactMount } from "../utils/createReactMount";
 import type { HiddenGroup } from "./types";
 import type { Root } from "react-dom/client";
 import { HiddenCommitsToggle } from "../components/HiddenCommitsToggle";
-import { hideRow, revealRow } from "./commitRowAnimations";
+import { hideRow, revealRow } from "./commitRowDisplay";
 
 // Tracks React roots so we can properly unmount them during cleanup
-export const mountedRoots = new Map<HTMLElement, Root>();
+export const visibleCommitRoots = new Map<HTMLElement, Root>();
 
 export function mountHiddenCommitToggle(
   panel: HTMLElement,
@@ -19,7 +19,7 @@ export function mountHiddenCommitToggle(
   }
 
   const { container, root } = createReactMount("git-matter-toggle-root");
-  mountedRoots.set(container, root);
+  visibleCommitRoots.set(container, root);
 
   // Put the container as the first child of the panel
   panel.insertBefore(container, panel.firstChild);
@@ -54,7 +54,7 @@ export function mountHiddenCommitStreak(groups: HiddenGroup[]) {
   }
 
   const { container, root } = createReactMount("git-matter-streak-root");
-  mountedRoots.set(container, root);
+  visibleCommitRoots.set(container, root);
 
   firstRow.parentElement?.insertBefore(container, firstRow);
 

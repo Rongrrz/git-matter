@@ -46,7 +46,7 @@ export function getCommitAuthors(row: HTMLElement): string[] {
   );
 }
 
-export function isAllBotCommitRow(row: HTMLElement): boolean {
+export function isBotOnlyCommitRow(row: HTMLElement): boolean {
   const authors = getCommitAuthors(row);
   return authors.length > 0 && authors.every((author) => botAuthors.has(author));
 }

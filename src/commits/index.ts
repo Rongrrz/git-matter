@@ -1,34 +1,21 @@
 import { debounce } from "../utils/debounce";
 import { runOnce } from "../utils/runOnce";
 import { createDirtyTracker } from "../utils/createDirtyTracker";
-import { hideRowImmediately, resetCommitRow, dimCommitRow, hideCommitRow } from "./commitRowAnimations";
+import { hideRowImmediately, resetCommitRow, dimCommitRow, hideCommitRow } from "./commitRowDisplay";
 import { commitPageSelectors } from "./selectors";
-import { isAllBotCommitRow } from "./commitAuthors";
+import { isBotOnlyCommitRow } from "./commitAuthors";
 import type { HiddenGroup } from "./types";
 import {
-  mountedRoots,
+  visibleCommitRoots,
   mountHiddenCommitStreak,
   mountHiddenCommitToggle,
-} from "./hiddenCommit";
+} from "./commitVisibilityControls";
 
 type FilteredCommitDisplayMode = "off" | "dim" | "hide";
 
 let commitDisplayMode: FilteredCommitDisplayMode = "hide";
 
-function applyFilteredCommitDisplayMode(filteredRows: HTMLElement[], mode: FilteredCommitDisplayMode): void {
-  if (mode === "off") {
-    filteredRows.forEach(resetCommitRow);
-  } else if (mode === "dim") {
-    filteredRows.forEach((row) => {
-      resetCommitRow(row);
-      dimCommitRow(row);
-    });
-  } else if (mode === "hide") {
-    filteredRows.forEach(hideCommitRow);
-  }
-}
-
-function findFilteredRows(panels: HTMLElement[]): HTMLElement[] {
+function collectFilteredCommitRows(panels: HTMLElement[]): HTMLElement[] {
   const filteredRows: HTMLElement[] = [];
 
   panels.forEach((panel) => {
@@ -37,7 +24,7 @@ function findFilteredRows(panels: HTMLElement[]): HTMLElement[] {
     );
 
     commitRows.forEach((row) => {
-      if (isAllBotCommitRow(row)) {
+      if (isBotOnlyCommitRow(row)) {
         filteredRows.push(row);
       }
     });
@@ -46,9 +33,9 @@ function findFilteredRows(panels: HTMLElement[]): HTMLElement[] {
   return filteredRows;
 }
 
-function cleanup(): void {
-  mountedRoots.forEach((root) => root.unmount());
-  mountedRoots.clear();
+function resetAllCommitDisplayState(): void {
+  visibleCommitRoots.forEach((root) => root.unmount());
+  visibleCommitRoots.clear();
 
   const injectedElements = document.querySelectorAll(
     commitPageSelectors.gitMatterCommitComponent,
@@ -61,40 +48,62 @@ function cleanup(): void {
   rowsToReset.forEach(resetCommitRow);
 }
 
-function filterCommits() {
-  if (commitDisplayMode === "off") {
-    return;
-  }
+function executeCommitDisplayPipeline() {
+  const commitPanels = collectCommitPanels();
+  const filteredRows = collectFilteredCommitRows(commitPanels);
 
-  const panels = Array.from(
+  switch (commitDisplayMode) {
+    case "off":
+      resetAllCommitDisplayState();
+      break;
+
+    case "dim":
+      applyDimmedCommitDisplay(filteredRows);
+      break;
+
+    case "hide":
+      applyHiddenCommitDisplay(filteredRows, commitPanels);
+      break;
+  }
+}
+
+function collectCommitPanels(): HTMLElement[] {
+  return Array.from(
     document.querySelectorAll<HTMLElement>(
       commitPageSelectors.commitGroupPanel,
     ),
   );
+}
 
-  const filteredRows = findFilteredRows(panels);
+function applyDimmedCommitDisplay(filteredRows: HTMLElement[]): void {
+  filteredRows.forEach((row) => {
+    resetCommitRow(row);
+    dimCommitRow(row);
+  });
+}
 
-  applyFilteredCommitDisplayMode(filteredRows, commitDisplayMode);
+function applyHiddenCommitDisplay(
+  filteredRows: HTMLElement[],
+  commitPanels: HTMLElement[],
+): void {
+  filteredRows.forEach(hideCommitRow);
 
-  if (commitDisplayMode !== "hide") {
-    return;
-  }
-
-  const hiddenRows = filteredRows;
-  const panelsWithHiddenRows = panels.filter((panel) => {
-    const rowsInPanel = panel.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow);
-    return Array.from(rowsInPanel).some((row) => hiddenRows.includes(row));
+  const panelsWithHiddenRows = commitPanels.filter((panel) => {
+    const rowsInPanel = panel.querySelectorAll<HTMLElement>(
+      commitPageSelectors.commitRow,
+    );
+    return Array.from(rowsInPanel).some((row) => filteredRows.includes(row));
   });
 
-  let streak: HiddenGroup[] = [];
+  let hiddenStreak: HiddenGroup[] = [];
 
-  function flushStreakAndMountUi() {
-    if (streak.length === 0) return;
+  function flushHiddenStreak() {
+    if (hiddenStreak.length === 0) return;
 
-    if (streak.length >= 2) {
-      mountHiddenCommitStreak(streak);
+    if (hiddenStreak.length >= 2) {
+      mountHiddenCommitStreak(hiddenStreak);
     } else {
-      const single = streak[0];
+      const single = hiddenStreak[0];
       single.timelineRow.style.display = "";
       const panel = single.hiddenRows[0].closest(
         commitPageSelectors.commitGroupPanel,
@@ -104,7 +113,7 @@ function filterCommits() {
       }
     }
 
-    streak = [];
+    hiddenStreak = [];
   }
 
   panelsWithHiddenRows.forEach((panel) => {
@@ -121,7 +130,7 @@ function filterCommits() {
     if (commitRows.length === 0) return;
 
     const panelHiddenRows = commitRows.filter((row) =>
-      hiddenRows.includes(row),
+      filteredRows.includes(row),
     );
 
     const visibleCount = commitRows.length - panelHiddenRows.length;
@@ -133,18 +142,18 @@ function filterCommits() {
 
     if (panelHiddenRows.length > 0 && visibleCount === 0) {
       hideRowImmediately(timelineRow);
-      streak.push({ timelineRow, hiddenRows: panelHiddenRows });
+      hiddenStreak.push({ timelineRow, hiddenRows: panelHiddenRows });
       return;
     }
 
-    flushStreakAndMountUi();
+    flushHiddenStreak();
 
     if (panelHiddenRows.length > 0) {
       mountHiddenCommitToggle(panel, panelHiddenRows, true);
     }
   });
 
-  flushStreakAndMountUi();
+  flushHiddenStreak();
 }
 
 export type { FilteredCommitDisplayMode };
@@ -154,8 +163,8 @@ export function setCommitDisplayMode(mode: FilteredCommitDisplayMode): void {
 }
 
 export function runCommitFiltering(): void {
-  cleanup();
-  filterCommits();
+  resetAllCommitDisplayState();
+  executeCommitDisplayPipeline();
 }
 
 export const initializeCommitFiltering = runOnce(() => {
