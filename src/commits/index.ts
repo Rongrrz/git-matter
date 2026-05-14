@@ -35,12 +35,7 @@ function applyHiddenDisplayWithControls(
 ): void {
   filteredRows.forEach(hideCommitRow);
 
-  const panelsWithHiddenRows = commitPanels.filter((panel) => {
-    const rowsInPanel = collectCommitRowsInPanel(panel);
-    return rowsInPanel.some((row) => filteredRows.includes(row));
-  });
-
-  let hiddenStreak: HiddenGroup[] = [];
+let hiddenStreak: HiddenGroup[] = [];
 
   function flushStreak() {
     if (hiddenStreak.length === 0) return;
@@ -57,7 +52,7 @@ function applyHiddenDisplayWithControls(
     hiddenStreak = [];
   }
 
-panelsWithHiddenRows.forEach((panel) => {
+  commitPanels.forEach((panel) => {
     if (panel.querySelector(GIT_MATTER_CLASSES.processedMarker)) return;
     const timelineRow = panel.closest(commitPageSelectors.timelineRow) as HTMLElement | null;
     if (!timelineRow) return;
@@ -67,6 +62,11 @@ panelsWithHiddenRows.forEach((panel) => {
 
     const panelHiddenRows = commitRows.filter((row) => filteredRows.includes(row));
     const visibleCount = commitRows.length - panelHiddenRows.length;
+
+    if (panelHiddenRows.length === 0) {
+      flushStreak();
+      return;
+    }
 
     const marker = document.createElement("div");
     marker.className = "git-matter-processed";
