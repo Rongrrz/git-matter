@@ -52,6 +52,13 @@ export function setupCommitObserver(
     nodes.forEach((node) => {
       if (!(node instanceof HTMLElement)) return;
       if (node.closest(`[${GIT_MATTER_CLASSES.componentMarker}]`)) return;
+
+      // Check if the node itself is a commit row
+      if (node.matches(commitPageSelectors.commitRow)) {
+        applyImmediateDisplayToRow(node, currentMode);
+      }
+
+      // Also check descendants
       const newRows = node.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow);
       newRows.forEach((row) => applyImmediateDisplayToRow(row, currentMode));
     });
