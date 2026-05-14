@@ -1,11 +1,11 @@
-import type { FilteredCommitDisplayMode } from "../types";
+import type { CommitVisibilityMode } from "../types";
 import { commitPageSelectors, GIT_MATTER_CLASSES } from "./selectors";
-import { collectCommitRowsFromNode } from "./collectRows";
-import { getCommitAuthors, shouldFilterCommit } from "./filtering";
-import { applySingleCommitDisplay } from "./display";
+import { collectCommitRowsFromNode } from "./commitPageItems";
+import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
+import { applySingleCommitVisibility } from "./commitVisibility";
 
 export function observeCommitPage(
-  getMode: () => FilteredCommitDisplayMode,
+  getMode: () => CommitVisibilityMode,
   reconcile: () => void,
   onPageChange: () => void,
 ): void {
@@ -64,7 +64,7 @@ export function observeCommitPage(
         const rows = collectCommitRowsFromNode(node);
         rows.forEach((row) => {
           const authors = getCommitAuthors(row);
-          applySingleCommitDisplay(
+          applySingleCommitVisibility(
             {
               row,
               authors,

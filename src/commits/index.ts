@@ -1,40 +1,46 @@
-import type { FilteredCommitDisplayMode } from "../types";
+import type { CommitVisibilityMode } from "../types";
 import { runOnce } from "../utils/runOnce";
-import { collectCommitPageItems } from "./collectRows";
-import { applyCommitDisplay, resetAllCommitDisplay } from "./display";
-import { clearHiddenControls, renderHiddenControls } from "./hiddenControls";
-import { observeCommitPage } from "./observer";
+import { collectCommitPageItems } from "./commitPageItems";
+import {
+  applyCommitVisibility,
+  resetAllCommitVisibility,
+} from "./commitVisibility";
+import {
+  clearHiddenCommitControls,
+  renderHiddenCommitControls,
+} from "./hiddenCommitControls";
+import { observeCommitPage } from "./commitPageObserver";
 
-let commitDisplayMode: FilteredCommitDisplayMode = "hide";
+let commitVisibilityMode: CommitVisibilityMode = "hide";
 
 function reconcileCommitPage(): void {
   const items = collectCommitPageItems();
 
-  clearHiddenControls();
-  applyCommitDisplay(items, commitDisplayMode);
+  clearHiddenCommitControls();
+  applyCommitVisibility(items, commitVisibilityMode);
 
-  if (commitDisplayMode === "hide") {
-    renderHiddenControls(items);
+  if (commitVisibilityMode === "hide") {
+    renderHiddenCommitControls(items);
   }
 }
 
 function clearInjectedUi(): void {
-  clearHiddenControls();
+  clearHiddenCommitControls();
 }
 
-export function setCommitDisplayMode(mode: FilteredCommitDisplayMode): void {
-  commitDisplayMode = mode;
+export function setCommitVisibilityMode(mode: CommitVisibilityMode): void {
+  commitVisibilityMode = mode;
 }
 
 export function runCommitFiltering(): void {
-  clearHiddenControls();
-  resetAllCommitDisplay();
+  clearHiddenCommitControls();
+  resetAllCommitVisibility();
   reconcileCommitPage();
 }
 
 export const initializeCommitFiltering = runOnce(() => {
   observeCommitPage(
-    () => commitDisplayMode,
+    () => commitVisibilityMode,
     reconcileCommitPage,
     clearInjectedUi,
   );

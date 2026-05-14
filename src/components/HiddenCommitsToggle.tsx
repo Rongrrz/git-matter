@@ -1,8 +1,7 @@
-import { StyledButton } from "./common/StyledButton";
 import { pluralize } from "../utils/pluralize";
+import { HiddenCommitsButton } from "./HiddenCommitsButton";
 
 const CLASS_NAME = [
-  "git-matter-toggle",
   "text-xs",
   "font-normal",
   "leading-4",
@@ -13,23 +12,27 @@ const CLASS_NAME = [
 
 type Props = {
   expanded: boolean;
-  hiddenCount: number;
+  hiddenCommitCount: number;
   hasVisibleBelow: boolean;
   onToggle: () => void;
 };
 
 export function HiddenCommitsToggle(props: Props) {
-  const borderStyle = props.hasVisibleBelow || props.expanded
-    ? { borderBottom: "1px solid var(--borderColor-muted)" }
-    : {};
-
-  const commitText = pluralize("commit", props.hiddenCount);
+  const commitText = pluralize("commit", props.hiddenCommitCount);
 
   return (
-    <StyledButton className={CLASS_NAME} style={borderStyle} onClick={props.onToggle}>
+    <HiddenCommitsButton
+      className={CLASS_NAME}
+      style={
+        props.hasVisibleBelow || props.expanded
+          ? { borderBottom: "1px solid var(--borderColor-muted)" }
+          : undefined
+      }
+      onClick={props.onToggle}
+    >
       {props.expanded
-        ? `Hide ${props.hiddenCount} ${commitText}`
-        : `Show ${props.hiddenCount} hidden ${commitText}`}
-    </StyledButton>
+        ? `Hide ${props.hiddenCommitCount} ${commitText}`
+        : `Show ${props.hiddenCommitCount} hidden ${commitText}`}
+    </HiddenCommitsButton>
   );
 }

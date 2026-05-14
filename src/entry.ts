@@ -2,23 +2,23 @@ import "./index.css";
 import {
   initializeCommitFiltering,
   runCommitFiltering,
-  setCommitDisplayMode,
+  setCommitVisibilityMode,
 } from "./commits";
-import { getStoredCommitDisplayMode } from "./utils/storage";
-import type { DisplayModeMessage } from "./types";
+import { getStoredCommitVisibilityMode } from "./utils/storage";
+import type { CommitVisibilityMessage } from "./types";
 
-getStoredCommitDisplayMode()
+getStoredCommitVisibilityMode()
   .then((mode) => {
-    setCommitDisplayMode(mode);
+    setCommitVisibilityMode(mode);
     initializeCommitFiltering();
   })
   .catch(() => {
     initializeCommitFiltering();
   });
 
-chrome.runtime.onMessage.addListener((message: DisplayModeMessage) => {
-  if (message.type === "SET_COMMIT_DISPLAY_MODE") {
-    setCommitDisplayMode(message.mode);
+chrome.runtime.onMessage.addListener((message: CommitVisibilityMessage) => {
+  if (message.type === "SET_COMMIT_VISIBILITY_MODE") {
+    setCommitVisibilityMode(message.mode);
     runCommitFiltering();
   }
 });

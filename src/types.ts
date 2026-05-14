@@ -1,10 +1,10 @@
-export type FilteredCommitDisplayMode = "off" | "dim" | "hide";
+export type CommitVisibilityMode = "off" | "dim" | "hide";
 
-export const COMMIT_DISPLAY_MODE_STORAGE_KEY = "commitDisplayMode";
+export const COMMIT_VISIBILITY_MODE_STORAGE_KEY = "commitDisplayMode";
 
-export const DEFAULT_COMMIT_DISPLAY_MODE: FilteredCommitDisplayMode = "hide";
+export const DEFAULT_COMMIT_VISIBILITY_MODE: CommitVisibilityMode = "hide";
 
-export type DisplayModeMessage = {
-  type: "SET_COMMIT_DISPLAY_MODE";
-  mode: FilteredCommitDisplayMode;
+export type CommitVisibilityMessage = {
+  type: "SET_COMMIT_VISIBILITY_MODE";
+  mode: CommitVisibilityMode;
 };

@@ -1,4 +1,4 @@
-import type { FilteredCommitDisplayMode } from "../types";
+import type { CommitVisibilityMode } from "../types";
 import { commitPageSelectors, GIT_MATTER_CLASSES } from "./selectors";
 import type { CommitItem, CommitPanelItem } from "./types";
 
@@ -29,22 +29,22 @@ export function revealRow(row: HTMLElement): void {
   row.style.display = "";
 }
 
-export function applyCommitDisplay(
+export function applyCommitVisibility(
   items: CommitPanelItem[],
-  mode: FilteredCommitDisplayMode,
+  mode: CommitVisibilityMode,
 ): void {
   items.forEach((item) => {
     resetRow(item.timelineRow);
 
     item.commits.forEach((commit) => {
-      applySingleCommitDisplay(commit, mode);
+      applySingleCommitVisibility(commit, mode);
     });
   });
 }
 
-export function applySingleCommitDisplay(
+export function applySingleCommitVisibility(
   commit: CommitItem,
-  mode: FilteredCommitDisplayMode,
+  mode: CommitVisibilityMode,
 ): void {
   resetRow(commit.row);
 
@@ -58,7 +58,7 @@ export function applySingleCommitDisplay(
   hideRow(commit.row);
 }
 
-export function resetAllCommitDisplay(): void {
+export function resetAllCommitVisibility(): void {
   document
     .querySelectorAll<HTMLElement>(commitPageSelectors.rowsToReset)
     .forEach(resetRow);

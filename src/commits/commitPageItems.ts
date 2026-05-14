@@ -1,5 +1,5 @@
 import { commitPageSelectors } from "./selectors";
-import { getCommitAuthors, shouldFilterCommit } from "./filtering";
+import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
 import type { CommitItem, CommitPanelItem } from "./types";
 
 export function collectCommitPageItems(): CommitPanelItem[] {

@@ -1,14 +1,14 @@
 import { createElement } from "react";
-import { HiddenCommitStreak } from "../components/HiddenCommitsStreak";
+import { HiddenCommitsStreak } from "../components/HiddenCommitsStreak";
 import { HiddenCommitsToggle } from "../components/HiddenCommitsToggle";
 import { createReactMount } from "../utils/createReactMount";
 import { commitPageSelectors } from "./selectors";
-import { hideRow, revealRow } from "./display";
+import { hideRow, revealRow } from "./commitVisibility";
 import type { CommitPanelItem, HiddenPanelGroup, MountedControl } from "./types";
 
 const controls = new Set<MountedControl>();
 
-export function clearHiddenControls(): void {
+export function clearHiddenCommitControls(): void {
   controls.forEach(({ container, root }) => {
     root.unmount();
     container.remove();
@@ -16,8 +16,8 @@ export function clearHiddenControls(): void {
   controls.clear();
 }
 
-export function renderHiddenControls(items: CommitPanelItem[]): void {
-  clearHiddenControls();
+export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
+  clearHiddenCommitControls();
 
   let streak: HiddenPanelGroup[] = [];
 
@@ -82,7 +82,7 @@ function mountToggle(
     root.render(
       createElement(HiddenCommitsToggle, {
         expanded,
-        hiddenCount: hiddenRows.length,
+        hiddenCommitCount: hiddenRows.length,
         hasVisibleBelow,
         onToggle: () => {
           expanded = !expanded;
@@ -120,7 +120,7 @@ function mountStreak(groups: HiddenPanelGroup[]): void {
   let expanded = false;
   const render = () => {
     root.render(
-      createElement(HiddenCommitStreak, {
+      createElement(HiddenCommitsStreak, {
         expanded,
         hiddenCommitCount,
         hiddenDayCount: groups.length,

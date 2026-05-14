@@ -1,9 +1,7 @@
-import { StyledButton } from "./common/StyledButton";
 import { pluralize } from "../utils/pluralize";
+import { HiddenCommitsButton } from "./HiddenCommitsButton";
 
-// TODO: Refactor CSS (background for buttons should just be transparent)
 const CLASS_NAME = [
-  "git-matter-streak",
   "text-sm",
   "font-medium",
   "py-3",
@@ -24,15 +22,15 @@ type Props = {
   onToggle: () => void;
 };
 
-export function HiddenCommitStreak(props: Props) {
+export function HiddenCommitsStreak(props: Props) {
   const commitText = pluralize("commit", props.hiddenCommitCount);
   const dayText = pluralize("day", props.hiddenDayCount);
 
   return (
-    <StyledButton className={CLASS_NAME} onClick={props.onToggle}>
+    <HiddenCommitsButton className={CLASS_NAME} onClick={props.onToggle}>
       {props.expanded
         ? `Hide ${props.hiddenCommitCount} ${commitText} across ${props.hiddenDayCount} ${dayText}`
         : `Show ${props.hiddenCommitCount} hidden ${commitText} across ${props.hiddenDayCount} ${dayText}`}
-    </StyledButton>
+    </HiddenCommitsButton>
   );
 }

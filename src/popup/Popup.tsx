@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import {
-  type FilteredCommitDisplayMode,
-  DEFAULT_COMMIT_DISPLAY_MODE,
+  type CommitVisibilityMode,
+  DEFAULT_COMMIT_VISIBILITY_MODE,
 } from "../types";
 import {
-  getStoredCommitDisplayMode,
-  setStoredCommitDisplayMode,
+  getStoredCommitVisibilityMode,
+  setStoredCommitVisibilityMode,
 } from "../utils/storage";
 
 const MODES: {
-  value: FilteredCommitDisplayMode;
+  value: CommitVisibilityMode;
   label: string;
   description: string;
 }[] = [
@@ -27,22 +27,22 @@ const MODES: {
 ];
 
 export function Popup() {
-  const [mode, setMode] = useState<FilteredCommitDisplayMode>(
-    DEFAULT_COMMIT_DISPLAY_MODE,
+  const [mode, setMode] = useState<CommitVisibilityMode>(
+    DEFAULT_COMMIT_VISIBILITY_MODE,
   );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getStoredCommitDisplayMode().then((storedMode) => {
+    getStoredCommitVisibilityMode().then((storedMode) => {
       setMode(storedMode);
       setLoading(false);
     });
   }, []);
 
-  async function handleModeChange(newMode: FilteredCommitDisplayMode) {
+  async function handleModeChange(newMode: CommitVisibilityMode) {
     setMode(newMode);
-    await setStoredCommitDisplayMode(newMode);
-    await sendCommitDisplayModeToActiveTab(newMode);
+    await setStoredCommitVisibilityMode(newMode);
+    await sendCommitVisibilityModeToActiveTab(newMode);
   }
 
   if (loading) {
@@ -67,7 +67,7 @@ export function Popup() {
             >
               <input
                 type="radio"
-                name="displayMode"
+                name="commitVisibilityMode"
                 value={option.value}
                 checked={mode === option.value}
                 onChange={() => handleModeChange(option.value)}
@@ -87,8 +87,8 @@ export function Popup() {
   );
 }
 
-async function sendCommitDisplayModeToActiveTab(
-  mode: FilteredCommitDisplayMode,
+async function sendCommitVisibilityModeToActiveTab(
+  mode: CommitVisibilityMode,
 ) {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
@@ -96,7 +96,7 @@ async function sendCommitDisplayModeToActiveTab(
   if (!tab.url?.includes("github.com")) return;
 
   await chrome.tabs.sendMessage(tab.id, {
-    type: "SET_COMMIT_DISPLAY_MODE",
+    type: "SET_COMMIT_VISIBILITY_MODE",
     mode,
   }).catch(() => undefined);
 }
