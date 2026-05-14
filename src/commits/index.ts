@@ -1,7 +1,7 @@
 import { debounce } from "../utils/debounce";
 import { runOnce } from "../utils/runOnce";
 import { createDirtyTracker } from "../utils/createDirtyTracker";
-import { hideRowImmediately } from "./commitRowAnimations";
+import { hideRowImmediately, resetCommitRow, dimCommitRow, hideCommitRow } from "./commitRowAnimations";
 import { commitPageSelectors } from "./selectors";
 import { isAllBotCommitRow } from "./commitAuthors";
 import type { HiddenGroup } from "./types";
@@ -11,11 +11,42 @@ import {
   mountHiddenCommitToggle,
 } from "./hiddenCommit";
 
+type FilteredCommitDisplayMode = "off" | "dim" | "hide";
+
+let commitDisplayMode: FilteredCommitDisplayMode = "hide";
+
+function applyFilteredCommitDisplayMode(filteredRows: HTMLElement[], mode: FilteredCommitDisplayMode): void {
+  if (mode === "off") {
+    filteredRows.forEach(resetCommitRow);
+  } else if (mode === "dim") {
+    filteredRows.forEach((row) => {
+      resetCommitRow(row);
+      dimCommitRow(row);
+    });
+  } else if (mode === "hide") {
+    filteredRows.forEach(hideCommitRow);
+  }
+}
+
+function findFilteredRows(panels: HTMLElement[]): HTMLElement[] {
+  const filteredRows: HTMLElement[] = [];
+
+  panels.forEach((panel) => {
+    const commitRows = Array.from(
+      panel.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow),
+    );
+
+    commitRows.forEach((row) => {
+      if (isAllBotCommitRow(row)) {
+        filteredRows.push(row);
+      }
+    });
+  });
+
+  return filteredRows;
+}
+
 function cleanup(): void {
-  // Internally:
-  // 1. Unmount React roots before removing DOM nodes
-  // 2. Remove injected GitMatter elements
-  // 3. Reset visibility of all GitHub rows
   mountedRoots.forEach((root) => root.unmount());
   mountedRoots.clear();
 
@@ -27,15 +58,33 @@ function cleanup(): void {
   const rowsToReset = document.querySelectorAll<HTMLElement>(
     commitPageSelectors.rowsToReset,
   );
-  rowsToReset.forEach((row) => (row.style.display = ""));
+  rowsToReset.forEach(resetCommitRow);
 }
 
 function filterCommits() {
+  if (commitDisplayMode === "off") {
+    return;
+  }
+
   const panels = Array.from(
     document.querySelectorAll<HTMLElement>(
       commitPageSelectors.commitGroupPanel,
     ),
   );
+
+  const filteredRows = findFilteredRows(panels);
+
+  applyFilteredCommitDisplayMode(filteredRows, commitDisplayMode);
+
+  if (commitDisplayMode !== "hide") {
+    return;
+  }
+
+  const hiddenRows = filteredRows;
+  const panelsWithHiddenRows = panels.filter((panel) => {
+    const rowsInPanel = panel.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow);
+    return Array.from(rowsInPanel).some((row) => hiddenRows.includes(row));
+  });
 
   let streak: HiddenGroup[] = [];
 
@@ -58,8 +107,7 @@ function filterCommits() {
     streak = [];
   }
 
-  panels.forEach((panel) => {
-    // Skip if processed but not cleaned up
+  panelsWithHiddenRows.forEach((panel) => {
     if (panel.querySelector(".git-matter-processed")) return;
 
     const timelineRow = panel.closest(
@@ -72,42 +120,47 @@ function filterCommits() {
     );
     if (commitRows.length === 0) return;
 
-    const hiddenRows: HTMLElement[] = [];
-    commitRows.forEach((row) => {
-      // We don't want to hide: UserA and Copilot coauthored commit.
-      if (isAllBotCommitRow(row)) {
-        hideRowImmediately(row);
-        hiddenRows.push(row);
-      }
-    });
+    const panelHiddenRows = commitRows.filter((row) =>
+      hiddenRows.includes(row),
+    );
 
-    const visibleCount = commitRows.length - hiddenRows.length;
+    const visibleCount = commitRows.length - panelHiddenRows.length;
 
     const marker = document.createElement("div");
     marker.className = "git-matter-processed";
     marker.style.display = "none";
     panel.appendChild(marker);
 
-    if (hiddenRows.length > 0 && visibleCount === 0) {
+    if (panelHiddenRows.length > 0 && visibleCount === 0) {
       hideRowImmediately(timelineRow);
-      streak.push({ timelineRow, hiddenRows });
+      streak.push({ timelineRow, hiddenRows: panelHiddenRows });
       return;
     }
 
     flushStreakAndMountUi();
 
-    if (hiddenRows.length > 0) {
-      mountHiddenCommitToggle(panel, hiddenRows, true);
+    if (panelHiddenRows.length > 0) {
+      mountHiddenCommitToggle(panel, panelHiddenRows, true);
     }
   });
 
   flushStreakAndMountUi();
 }
 
+export type { FilteredCommitDisplayMode };
+
+export function setCommitDisplayMode(mode: FilteredCommitDisplayMode): void {
+  commitDisplayMode = mode;
+}
+
+export function runCommitFiltering(): void {
+  cleanup();
+  filterCommits();
+}
+
 export const initializeCommitFiltering = runOnce(() => {
   let scheduleRerun = debounce(() => {
-    cleanup();
-    filterCommits();
+    runCommitFiltering();
   }, 300);
 
   const hasUrlChanged = createDirtyTracker(() => location.href);

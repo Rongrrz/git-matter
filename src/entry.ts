@@ -1,7 +1,22 @@
 import "./index.css";
-import { initializeCommitFiltering } from "./commits";
+import { initializeCommitFiltering, setCommitDisplayMode, runCommitFiltering } from "./commits";
+import { getStoredCommitDisplayMode } from "./utils/storage";
+import type { DisplayModeMessage } from "./types";
 
-initializeCommitFiltering();
+getStoredCommitDisplayMode()
+  .then((mode) => {
+    setCommitDisplayMode(mode);
+    initializeCommitFiltering();
+  })
+  .catch(() => {
+    initializeCommitFiltering();
+  });
 
-// TODO: Remove later
-console.log("Git Matter content script loaded, V2");
+chrome.runtime.onMessage.addListener((message: DisplayModeMessage) => {
+  if (message.type === "SET_COMMIT_DISPLAY_MODE") {
+    setCommitDisplayMode(message.mode);
+    runCommitFiltering();
+  }
+});
+
+console.log("Git Matter content script loaded");

@@ -1,3 +1,5 @@
+const DIMMED_CLASS = "git-matter-dimmed-commit";
+
 function animateRow(
   row: HTMLElement,
   from: Keyframe,
@@ -39,4 +41,17 @@ export function hideRow(row: HTMLElement) {
 
 export function hideRowImmediately(row: HTMLElement) {
   row.style.display = "none";
+}
+
+export function resetCommitRow(row: HTMLElement) {
+  row.style.display = "";
+  row.classList.remove(DIMMED_CLASS);
+}
+
+export function dimCommitRow(row: HTMLElement) {
+  row.classList.add(DIMMED_CLASS);
+}
+
+export function hideCommitRow(row: HTMLElement) {
+  hideRowImmediately(row);
 }

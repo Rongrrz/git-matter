@@ -1,0 +1,85 @@
+import { useState, useEffect } from "react";
+import {
+  type FilteredCommitDisplayMode,
+  DEFAULT_COMMIT_DISPLAY_MODE,
+} from "../types";
+import { getStoredCommitDisplayMode, setStoredCommitDisplayMode } from "../utils/storage";
+
+const MODES: { value: FilteredCommitDisplayMode; label: string; description: string }[] = [
+  { value: "off", label: "Off", description: "Show all commits normally" },
+  { value: "dim", label: "Dim", description: "Keep bot commits visible but dimmed" },
+  { value: "hide", label: "Hide", description: "Hide bot commits completely" },
+];
+
+export function Popup() {
+  const [mode, setMode] = useState<FilteredCommitDisplayMode>(DEFAULT_COMMIT_DISPLAY_MODE);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getStoredCommitDisplayMode().then((storedMode) => {
+      setMode(storedMode);
+      setLoading(false);
+    });
+  }, []);
+
+  async function handleModeChange(newMode: FilteredCommitDisplayMode) {
+    setMode(newMode);
+    await setStoredCommitDisplayMode(newMode);
+    await sendCommitDisplayModeToActiveTab(newMode);
+  }
+
+  if (loading) {
+    return (
+      <div className="p-4 text-sm text-[var(--fgColor-muted)]">
+        Loading...
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-64 p-4 font-sans text-sm text-[var(--fgColor-default)]">
+      <h1 className="text-lg font-semibold mb-4">Git Matter</h1>
+
+      <fieldset>
+        <legend className="text-xs font-medium text-[var(--fgColor-muted)] mb-2">
+          Commit display mode
+        </legend>
+        <div className="flex flex-col gap-2">
+          {MODES.map((option) => (
+            <label
+              key={option.value}
+              className="flex items-start gap-2 p-2 rounded cursor-pointer hover:bg-[var(--bgColor-muted)] transition-colors"
+            >
+              <input
+                type="radio"
+                name="displayMode"
+                value={option.value}
+                checked={mode === option.value}
+                onChange={() => handleModeChange(option.value)}
+                className="mt-1"
+              />
+              <div>
+                <div className="font-medium">{option.label}</div>
+                <div className="text-xs text-[var(--fgColor-muted)]">
+                  {option.description}
+                </div>
+              </div>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    </div>
+  );
+}
+
+async function sendCommitDisplayModeToActiveTab(mode: FilteredCommitDisplayMode) {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) return;
+
+  if (!tab.url?.includes("github.com")) return;
+
+  await chrome.tabs.sendMessage(tab.id, {
+    type: "SET_COMMIT_DISPLAY_MODE",
+    mode,
+  });
+}
