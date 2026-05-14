@@ -1,11 +1,13 @@
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import "./index.css";
 import { HiddenCommitsToggle } from "../components/HiddenCommitsToggle";
 import { HiddenCommitStreak } from "../components/HiddenCommitsStreak";
 import { botAuthors } from "../constants/botAuthors";
 import { debounce } from "../utils/debounce";
 import { runOnce } from "../utils/runOnce";
+import { getCommitAuthor } from "./getCommitAuthor";
+import { createDirtyTracker } from "../utils/dirtyTracker";
+import { hideRow, hideRowImmediately, revealRow } from "./commitRowAnimations";
 
 type HiddenGroup = {
   timelineRow: HTMLElement;
@@ -14,82 +16,6 @@ type HiddenGroup = {
 
 // Track roots globally so we can properly unmount them during cleanup
 const mountedRoots = new Map<HTMLElement, Root>();
-
-function getCommitAuthor(row: HTMLElement): string | null {
-  const ariaAuthor = row
-    .querySelector('[aria-label^="commits by "]')
-    ?.getAttribute("aria-label");
-
-  if (ariaAuthor) {
-    return ariaAuthor.replace("commits by ", "").trim().toLowerCase();
-  }
-
-  const links = Array.from(row.querySelectorAll<HTMLAnchorElement>("a"));
-  for (const link of links) {
-    const text = link.textContent?.trim().toLowerCase();
-    if (text && botAuthors.has(text)) return text;
-  }
-
-  const authorLink = row.querySelector<HTMLAnchorElement>('a[href*="author="]');
-  if (authorLink) {
-    try {
-      const url = new URL(authorLink.href);
-      return url.searchParams.get("author")?.trim().toLowerCase() || null;
-    } catch {
-      /* ignore */
-    }
-  }
-
-  return null;
-}
-
-function revealRow(row: HTMLElement) {
-  row.style.display = "";
-
-  row.animate(
-    [
-      {
-        opacity: 0,
-        transform: "translateY(-6px)",
-      },
-      {
-        opacity: 1,
-        transform: "translateY(0)",
-      },
-    ],
-    {
-      duration: 180,
-      easing: "ease-out",
-    },
-  );
-}
-
-function hideRow(row: HTMLElement) {
-  const animation = row.animate(
-    [
-      {
-        opacity: 1,
-        transform: "translateY(0)",
-      },
-      {
-        opacity: 0,
-        transform: "translateY(-6px)",
-      },
-    ],
-    {
-      duration: 140,
-      easing: "ease-in",
-    },
-  );
-
-  animation.onfinish = () => {
-    row.style.display = "none";
-  };
-}
-
-function hideRowImmediately(row: HTMLElement) {
-  row.style.display = "none";
-}
 
 function cleanupGitMatter() {
   // 1. Properly unmount React roots before removing DOM nodes
@@ -223,11 +149,7 @@ function mountSingleToggle(
           expanded = !expanded;
 
           hiddenRows.forEach((row) => {
-            if (expanded) {
-              revealRow(row);
-            } else {
-              hideRow(row);
-            }
+            expanded ? revealRow(row) : hideRow(row);
           });
 
           render();
@@ -267,18 +189,12 @@ function mountHiddenStreak(groups: HiddenGroup[]) {
           expanded = !expanded;
 
           groups.forEach((group) => {
-            if (expanded) {
-              revealRow(group.timelineRow);
-            } else {
-              hideRow(group.timelineRow);
-            }
+            expanded
+              ? revealRow(group.timelineRow)
+              : hideRow(group.timelineRow);
 
             group.hiddenRows.forEach((row) => {
-              if (expanded) {
-                revealRow(row);
-              } else {
-                hideRow(row);
-              }
+              expanded ? revealRow(row) : hideRow(row);
             });
           });
 
@@ -297,15 +213,14 @@ export const startFilteringCommits = runOnce(() => {
     filterCommits();
   }, 300);
 
-  // Observe DOM changes to re-apply filtering when new commits are loaded
-  // this occurs when the user clicks previous or next page.
-  new MutationObserver((mutations) => {
-    const hasNewCommits = mutations.some((mutation) =>
+  const hasUrlChanged = createDirtyTracker(() => location.href);
+
+  const hasNewCommitNodes = (mutations: MutationRecord[]) => {
+    return mutations.some((mutation) =>
       Array.from(mutation.addedNodes).some((node) => {
         if (!(node instanceof HTMLElement)) return false;
 
-        // This node is something that WE (the extension) injected,
-        // ignore it to prevent infinite loops.
+        // Prevent detecting nodes WE ourselves added to avoid infinite loops.
         if (node.closest("[data-git-matter-component]")) {
           return false;
         }
@@ -315,8 +230,12 @@ export const startFilteringCommits = runOnce(() => {
         );
       }),
     );
+  };
 
-    if (hasNewCommits) {
+  // Observe DOM changes to re-apply filtering when new commits are loaded
+  // this occurs when the user clicks previous or next page, or filters by date.
+  new MutationObserver((mutations) => {
+    if (hasUrlChanged() || hasNewCommitNodes(mutations)) {
       scheduleRerun();
     }
   }).observe(document.body, {
