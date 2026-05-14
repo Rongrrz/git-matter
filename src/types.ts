@@ -7,4 +7,4 @@ export const DEFAULT_COMMIT_DISPLAY_MODE: FilteredCommitDisplayMode = "hide";
 export type DisplayModeMessage = {
   type: "SET_COMMIT_DISPLAY_MODE";
   mode: FilteredCommitDisplayMode;
-};
+}

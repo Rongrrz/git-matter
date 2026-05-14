@@ -4,4 +4,4 @@ export type HiddenGroup = {
   timelineRow: HTMLElement;
   /** The commit rows that were hidden */
   hiddenRows: HTMLElement[];
-};
+}

@@ -4,14 +4,13 @@ import { createDirtyTracker } from "../utils/createDirtyTracker";
 import { hideRowImmediately, resetCommitRow, dimCommitRow, hideCommitRow } from "./commitRowDisplay";
 import { commitPageSelectors } from "./selectors";
 import { isBotOnlyCommitRow } from "./commitAuthors";
+import type { FilteredCommitDisplayMode } from "../types";
 import type { HiddenGroup } from "./types";
 import {
   visibleCommitRoots,
   mountHiddenCommitStreak,
   mountHiddenCommitToggle,
 } from "./commitVisibilityControls";
-
-type FilteredCommitDisplayMode = "off" | "dim" | "hide";
 
 let commitDisplayMode: FilteredCommitDisplayMode = "hide";
 
@@ -168,7 +167,7 @@ export function runCommitFiltering(): void {
 }
 
 export const initializeCommitFiltering = runOnce(() => {
-  let scheduleRerun = debounce(() => {
+  const scheduleRerun = debounce(() => {
     runCommitFiltering();
   }, 300);
 
@@ -203,7 +202,9 @@ export const initializeCommitFiltering = runOnce(() => {
   });
 
   // This does our initial run
-  document.readyState === "loading"
-    ? window.addEventListener("DOMContentLoaded", scheduleRerun, { once: true })
-    : scheduleRerun();
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", scheduleRerun, { once: true });
+  } else {
+    scheduleRerun();
+  }
 });

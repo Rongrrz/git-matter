@@ -19,4 +19,5 @@ chrome.runtime.onMessage.addListener((message: DisplayModeMessage) => {
   }
 });
 
+// eslint-disable-next-line no-console
 console.log("Git Matter content script loaded");

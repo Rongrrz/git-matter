@@ -5,5 +5,5 @@ export function createDirtyTracker<T>(getValue: () => T) {
         const isDirty = current !== previous;
         previous = current;
         return isDirty;
-    }
+    };
 }

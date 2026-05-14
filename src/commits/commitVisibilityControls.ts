@@ -35,7 +35,11 @@ export function mountHiddenCommitToggle(
           expanded = !expanded;
 
           hiddenRows.forEach((row) => {
-            expanded ? revealRow(row) : hideRow(row);
+            if (expanded) {
+              revealRow(row);
+            } else {
+              hideRow(row);
+            }
           });
 
           render();
@@ -74,12 +78,18 @@ export function mountHiddenCommitStreak(groups: HiddenGroup[]) {
           expanded = !expanded;
 
           groups.forEach((group) => {
-            expanded
-              ? revealRow(group.timelineRow)
-              : hideRow(group.timelineRow);
+            if (expanded) {
+              revealRow(group.timelineRow);
+            } else {
+              hideRow(group.timelineRow);
+            }
 
             group.hiddenRows.forEach((row) => {
-              expanded ? revealRow(row) : hideRow(row);
+              if (expanded) {
+                revealRow(row);
+              } else {
+                hideRow(row);
+              }
             });
           });
 
