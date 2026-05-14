@@ -1,19 +1,29 @@
-const commitRow = '[data-testid="commit-row-item"]';
-const timelineRow = 'div[class*="TimelineRow-module__timelineRowItem"]';
-const allGitHubRows = `${commitRow}, ${timelineRow}`;
+// GitHub DOM selectors (used to find commit elements)
+const github = {
+  commitRow: '[data-testid="commit-row-item"]',
+  timelineRow: 'div[class*="TimelineRow-module__timelineRowItem"]',
+  commitGroupPanel: 'div[class*="CommitGroup-module__panel"]',
+  commitAuthorAria: '[aria-label^="commits by "]',
+} as const;
 
-const commitGroupPanelSelector = 'div[class*="CommitGroup-module__panel"]';
+// GitMatter injected elements (used to find/reset our own components)
+const gitMatter = {
+  toggleRoot: ".git-matter-toggle-root",
+  streakRoot: ".git-matter-streak-root",
+  processedMarker: ".git-matter-processed",
+} as const;
 
-const gitMatterCommitComponent =
-  ".git-matter-toggle-root, .git-matter-streak-root, .git-matter-processed";
-
-const commitAuthorAriaSelector = '[aria-label^="commits by "]';
+// Combined selector for cleanup
+const allRows = `${github.commitRow}, ${github.timelineRow}`;
 
 export const commitPageSelectors = {
-  commitRow: commitRow,
-  timelineRow: timelineRow,
-  rowsToReset: allGitHubRows,
-  commitGroupPanel: commitGroupPanelSelector,
-  gitMatterCommitComponent: gitMatterCommitComponent,
-  commitRowAria: commitAuthorAriaSelector,
-};
+  // GitHub elements
+  commitRow: github.commitRow,
+  timelineRow: github.timelineRow,
+  commitGroupPanel: github.commitGroupPanel,
+  commitAuthorAria: github.commitAuthorAria,
+
+  // GitMatter elements
+  gitMatterCommitComponent: `${gitMatter.toggleRoot}, ${gitMatter.streakRoot}, ${gitMatter.processedMarker}`,
+  rowsToReset: allRows,
+} as const;

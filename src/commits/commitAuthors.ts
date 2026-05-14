@@ -6,7 +6,7 @@ function extractAuthorsFromRow(row: HTMLElement): string[] {
 
   // Commit author information can be found in an aria-label.
   const ariaAuthor = row
-    .querySelector(commitPageSelectors.commitRowAria)
+    .querySelector(commitPageSelectors.commitAuthorAria)
     ?.getAttribute("aria-label");
   ariaAuthor && result.add(ariaAuthor.replace("commits by ", ""));
 
@@ -18,7 +18,9 @@ function extractAuthorsFromRow(row: HTMLElement): string[] {
     author && result.add(author);
   }
 
-  // Fallback for author names that appear as visible text instead of structured data.
+  // Fallback: grab all link/text spans. This is fragile and can pick up
+  // false positives (links in commit messages, filenames, branch names).
+  // Works because bot-only commits often have no other meaningful text.
   const authorTextElements = row.querySelectorAll("a, span");
   Array.from(authorTextElements).forEach(
     (element) => element.textContent && result.add(element.textContent),

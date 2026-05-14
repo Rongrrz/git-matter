@@ -14,6 +14,10 @@ export function mountHiddenCommitToggle(
   hiddenRows: HTMLElement[],
   hasVisibleBelow: boolean,
 ) {
+  if (panel.querySelector(".git-matter-toggle-root")) {
+    return;
+  }
+
   const { container, root } = createReactMount("git-matter-toggle-root");
   mountedRoots.set(container, root);
 
@@ -44,10 +48,14 @@ export function mountHiddenCommitToggle(
 }
 
 export function mountHiddenCommitStreak(groups: HiddenGroup[]) {
+  const firstRow = groups[0].timelineRow;
+  if (firstRow.parentElement?.querySelector(".git-matter-streak-root")) {
+    return;
+  }
+
   const { container, root } = createReactMount("git-matter-streak-root");
   mountedRoots.set(container, root);
 
-  const firstRow = groups[0].timelineRow;
   firstRow.parentElement?.insertBefore(container, firstRow);
 
   const totalHiddenCommits = groups.reduce(

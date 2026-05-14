@@ -39,7 +39,7 @@ function filterCommits() {
 
   let streak: HiddenGroup[] = [];
 
-  function flushStreak() {
+  function flushStreakAndMountUi() {
     if (streak.length === 0) return;
 
     if (streak.length >= 2) {
@@ -94,14 +94,14 @@ function filterCommits() {
       return;
     }
 
-    flushStreak();
+    flushStreakAndMountUi();
 
     if (hiddenRows.length > 0) {
       mountHiddenCommitToggle(panel, hiddenRows, true);
     }
   });
 
-  flushStreak();
+  flushStreakAndMountUi();
 }
 
 export const initializeCommitFiltering = runOnce(() => {
@@ -123,7 +123,7 @@ export const initializeCommitFiltering = runOnce(() => {
         }
 
         return node.querySelector<HTMLElement>(
-          '[data-testid="commit-row-item"]',
+          commitPageSelectors.commitRow,
         );
       }),
     );
