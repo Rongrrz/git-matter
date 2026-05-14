@@ -1,13 +1,9 @@
 import type { FilteredCommitDisplayMode } from "../types";
 import { runOnce } from "../utils/runOnce";
-import {
-  applyCommitDisplay,
-  clearHiddenControls,
-  collectCommitPageItems,
-  observeCommitPage,
-  renderHiddenControls,
-  resetAllCommitDisplay,
-} from "./pipeline";
+import { collectCommitPageItems } from "./collectRows";
+import { applyCommitDisplay, resetAllCommitDisplay } from "./display";
+import { clearHiddenControls, renderHiddenControls } from "./hiddenControls";
+import { observeCommitPage } from "./observer";
 
 let commitDisplayMode: FilteredCommitDisplayMode = "hide";
 
