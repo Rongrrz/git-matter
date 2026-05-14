@@ -1,31 +1,36 @@
 import { useState, useEffect } from "react";
 import {
   type CommitVisibilityMode,
-  type ColorMode,
+  type PopupThemeMode,
   DEFAULT_COMMIT_VISIBILITY_MODE,
+  DEFAULT_POPUP_THEME_MODE,
 } from "../types";
-import { getStoredCommitVisibilityMode, setStoredCommitVisibilityMode } from "../utils/storage";
-import { CommitVisibilityOptions } from "./CommitVisibilityOptions";
 import {
-  getActiveGithubColorMode,
-  getPopupThemeClasses,
-  getPreferredColorMode,
-} from "./githubTheme";
+  getStoredCommitVisibilityMode,
+  getStoredPopupThemeMode,
+  setStoredCommitVisibilityMode,
+  setStoredPopupThemeMode,
+} from "../utils/storage";
+import { CommitVisibilityOptions } from "./CommitVisibilityOptions";
+import { getPopupThemeClasses, resolvePopupColorMode } from "./githubTheme";
+import { ThemeModeToggle } from "./ThemeModeToggle";
 
 export function Popup() {
   const [mode, setMode] = useState<CommitVisibilityMode>(DEFAULT_COMMIT_VISIBILITY_MODE);
-  const [colorMode, setColorMode] = useState<ColorMode>(getPreferredColorMode);
+  const [themeMode, setThemeMode] = useState<PopupThemeMode>(
+    DEFAULT_POPUP_THEME_MODE,
+  );
   const [loading, setLoading] = useState(true);
-  const theme = getPopupThemeClasses(colorMode);
+  const theme = getPopupThemeClasses(resolvePopupColorMode(themeMode));
 
   useEffect(() => {
-    getStoredCommitVisibilityMode().then((storedMode) => {
+    Promise.all([
+      getStoredCommitVisibilityMode(),
+      getStoredPopupThemeMode(),
+    ]).then(([storedMode, storedThemeMode]) => {
       setMode(storedMode);
+      setThemeMode(storedThemeMode);
       setLoading(false);
-    });
-
-    getActiveGithubColorMode().then((githubColorMode) => {
-      if (githubColorMode) setColorMode(githubColorMode);
     });
   }, []);
 
@@ -33,6 +38,11 @@ export function Popup() {
     setMode(newMode);
     await setStoredCommitVisibilityMode(newMode);
     await sendCommitVisibilityModeToActiveTab(newMode);
+  }
+
+  async function handleThemeModeChange(newMode: PopupThemeMode) {
+    setThemeMode(newMode);
+    await setStoredPopupThemeMode(newMode);
   }
 
   if (loading) {
@@ -48,6 +58,14 @@ export function Popup() {
         mutedTextClassName={theme.mutedText}
         optionClassName={theme.option}
         onChange={handleModeChange}
+      />
+
+      <ThemeModeToggle
+        mode={themeMode}
+        borderClassName={theme.border}
+        mutedTextClassName={theme.mutedText}
+        selectedClassName={theme.selected}
+        onChange={handleThemeModeChange}
       />
     </div>
   );
