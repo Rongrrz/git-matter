@@ -1,7 +1,23 @@
-/** Represents a group of consecutive hidden commits grouped under a single timeline row. */
-export type HiddenGroup = {
-  /** The parent timeline row that contains the hidden commits */
+import type { Root } from "react-dom/client";
+
+export type CommitItem = {
+  row: HTMLElement;
+  authors: string[];
+  filtered: boolean;
+};
+
+export type CommitPanelItem = {
+  panel: HTMLElement;
   timelineRow: HTMLElement;
-  /** The commit rows that were hidden */
+  commits: CommitItem[];
+};
+
+export type HiddenPanelGroup = {
+  timelineRow: HTMLElement;
   hiddenRows: HTMLElement[];
-}
+};
+
+export type MountedControl = {
+  container: HTMLElement;
+  root: Root;
+};

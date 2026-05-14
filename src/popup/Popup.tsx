@@ -13,13 +13,17 @@ const MODES: {
   label: string;
   description: string;
 }[] = [
-  { value: "off", label: "Off", description: "Show all commits normally" },
+  { value: "off", label: "Off", description: "Show every commit normally" },
   {
     value: "dim",
     label: "Dim",
-    description: "Keep bot commits visible but dimmed",
+    description: "Keep filtered commits visible with less emphasis",
   },
-  { value: "hide", label: "Hide", description: "Hide bot commits completely" },
+  {
+    value: "hide",
+    label: "Hide",
+    description: "Collapse filtered commits behind reveal controls",
+  },
 ];
 
 export function Popup() {
@@ -53,7 +57,7 @@ export function Popup() {
 
       <fieldset>
         <legend className="text-xs font-medium text-[var(--fgColor-muted)] mb-2">
-          Commit display mode
+          Commit visibility
         </legend>
         <div className="flex flex-col gap-2">
           {MODES.map((option) => (
@@ -94,5 +98,5 @@ async function sendCommitDisplayModeToActiveTab(
   await chrome.tabs.sendMessage(tab.id, {
     type: "SET_COMMIT_DISPLAY_MODE",
     mode,
-  });
+  }).catch(() => undefined);
 }

@@ -1,5 +1,9 @@
 import "./index.css";
-import { initializeCommitFiltering, setCommitDisplayMode, runCommitFiltering } from "./commits";
+import {
+  initializeCommitFiltering,
+  runCommitFiltering,
+  setCommitDisplayMode,
+} from "./commits";
 import { getStoredCommitDisplayMode } from "./utils/storage";
 import type { DisplayModeMessage } from "./types";
 
