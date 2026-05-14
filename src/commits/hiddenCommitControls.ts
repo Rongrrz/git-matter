@@ -63,7 +63,11 @@ export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
   flushStreak();
 }
 
-function mountToggle(panel: HTMLElement, hiddenRows: HTMLElement[], hasVisibleBelow: boolean): void {
+function mountToggle(
+  panel: HTMLElement,
+  hiddenRows: HTMLElement[],
+  hasVisibleBelow: boolean,
+): void {
   const { container, root } = createReactMount("git-matter-toggle-root");
   container.dataset.gitMatterComponent = "";
   controls.add({ container, root });
