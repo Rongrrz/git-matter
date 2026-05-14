@@ -4,18 +4,22 @@ import { createReactMount } from "../utils/createReactMount";
 import type { HiddenGroup } from "./types";
 import type { Root } from "react-dom/client";
 import { HiddenCommitsToggle } from "../components/HiddenCommitsToggle";
-import { hideRow, revealRow } from "./commitRowAnimations";
+import { hideRow, revealRow } from "./commitRowDisplay";
 
 // Tracks React roots so we can properly unmount them during cleanup
-export const mountedRoots = new Map<HTMLElement, Root>();
+export const visibleCommitRoots = new Map<HTMLElement, Root>();
 
 export function mountHiddenCommitToggle(
   panel: HTMLElement,
   hiddenRows: HTMLElement[],
   hasVisibleBelow: boolean,
 ) {
+  if (panel.querySelector(".git-matter-toggle-root")) {
+    return;
+  }
+
   const { container, root } = createReactMount("git-matter-toggle-root");
-  mountedRoots.set(container, root);
+  visibleCommitRoots.set(container, root);
 
   // Put the container as the first child of the panel
   panel.insertBefore(container, panel.firstChild);
@@ -31,7 +35,11 @@ export function mountHiddenCommitToggle(
           expanded = !expanded;
 
           hiddenRows.forEach((row) => {
-            expanded ? revealRow(row) : hideRow(row);
+            if (expanded) {
+              revealRow(row);
+            } else {
+              hideRow(row);
+            }
           });
 
           render();
@@ -44,10 +52,14 @@ export function mountHiddenCommitToggle(
 }
 
 export function mountHiddenCommitStreak(groups: HiddenGroup[]) {
-  const { container, root } = createReactMount("git-matter-streak-root");
-  mountedRoots.set(container, root);
-
   const firstRow = groups[0].timelineRow;
+  if (firstRow.parentElement?.querySelector(".git-matter-streak-root")) {
+    return;
+  }
+
+  const { container, root } = createReactMount("git-matter-streak-root");
+  visibleCommitRoots.set(container, root);
+
   firstRow.parentElement?.insertBefore(container, firstRow);
 
   const totalHiddenCommits = groups.reduce(
@@ -66,12 +78,18 @@ export function mountHiddenCommitStreak(groups: HiddenGroup[]) {
           expanded = !expanded;
 
           groups.forEach((group) => {
-            expanded
-              ? revealRow(group.timelineRow)
-              : hideRow(group.timelineRow);
+            if (expanded) {
+              revealRow(group.timelineRow);
+            } else {
+              hideRow(group.timelineRow);
+            }
 
             group.hiddenRows.forEach((row) => {
-              expanded ? revealRow(row) : hideRow(row);
+              if (expanded) {
+                revealRow(row);
+              } else {
+                hideRow(row);
+              }
             });
           });
 

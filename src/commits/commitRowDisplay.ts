@@ -1,4 +1,8 @@
-function animateRowHelper(
+import { GIT_MATTER_CLASSES } from "./selectors";
+
+const DIMMED_CLASS = GIT_MATTER_CLASSES.dimmed;
+
+function animateRow(
   row: HTMLElement,
   from: Keyframe,
   to: Keyframe,
@@ -17,7 +21,7 @@ function animateRowHelper(
 export function revealRow(row: HTMLElement) {
   row.style.display = "";
 
-  animateRowHelper(
+  animateRow(
     row,
     { opacity: 0, transform: "translateY(-6px)" },
     { opacity: 1, transform: "translateY(0)" },
@@ -26,7 +30,7 @@ export function revealRow(row: HTMLElement) {
 }
 
 export function hideRow(row: HTMLElement) {
-  animateRowHelper(
+  animateRow(
     row,
     { opacity: 1, transform: "translateY(0)" },
     { opacity: 0, transform: "translateY(-6px)" },
@@ -39,4 +43,17 @@ export function hideRow(row: HTMLElement) {
 
 export function hideRowImmediately(row: HTMLElement) {
   row.style.display = "none";
+}
+
+export function resetCommitRow(row: HTMLElement) {
+  row.style.display = "";
+  row.classList.remove(DIMMED_CLASS);
+}
+
+export function dimCommitRow(row: HTMLElement) {
+  row.classList.add(DIMMED_CLASS);
+}
+
+export function hideCommitRow(row: HTMLElement) {
+  hideRowImmediately(row);
 }

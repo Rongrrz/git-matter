@@ -2,6 +2,11 @@
   "manifest_version": 3,
   "name": "Git Matter",
   "version": "1.0.0",
+  "permissions": ["storage", "activeTab"],
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Git Matter"
+  },
   "content_scripts": [
     {
       "matches": ["https://github.com/*/*/commits/*"],

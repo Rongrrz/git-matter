@@ -11,7 +11,7 @@ import { twMerge } from "tailwind-merge";
  * Later Tailwind classes override earlier conflicting ones.
  */
 export function mergeClassNames(
-  ...classes: Array<string | false | null | undefined>
+  ...classes: (string | false | null | undefined)[]
 ): string {
   const filteredClasses = classes.filter(Boolean).join(" ");
   return twMerge(filteredClasses);
