@@ -6,15 +6,18 @@ const github = {
   commitAuthorAria: '[aria-label^="commits by "]',
 } as const;
 
-// GitMatter injected elements (used to find/reset our own components)
+// GitMatter class names (used for injected UI and visual states)
 const gitMatter = {
   toggleRoot: ".git-matter-toggle-root",
   streakRoot: ".git-matter-streak-root",
   processedMarker: ".git-matter-processed",
+  dimmed: "git-matter-dimmed-commit",
+  componentMarker: "data-git-matter-component",
 } as const;
 
-// Combined selector for cleanup
+// Combined selectors
 const allRows = `${github.commitRow}, ${github.timelineRow}`;
+const allGitMatterComponents = `${gitMatter.toggleRoot}, ${gitMatter.streakRoot}, ${gitMatter.processedMarker}`;
 
 export const commitPageSelectors = {
   // GitHub elements
@@ -24,6 +27,8 @@ export const commitPageSelectors = {
   commitAuthorAria: github.commitAuthorAria,
 
   // GitMatter elements
-  gitMatterCommitComponent: `${gitMatter.toggleRoot}, ${gitMatter.streakRoot}, ${gitMatter.processedMarker}`,
+  gitMatterCommitComponent: allGitMatterComponents,
   rowsToReset: allRows,
 } as const;
+
+export const GIT_MATTER_CLASSES = gitMatter;

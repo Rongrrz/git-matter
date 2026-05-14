@@ -1,53 +1,18 @@
 import { runOnce } from "../utils/runOnce";
-import { createDirtyTracker } from "../utils/createDirtyTracker";
-import { hideRowImmediately, resetCommitRow, dimCommitRow, hideCommitRow } from "./commitRowDisplay";
-import { commitPageSelectors } from "./selectors";
-import { isBotOnlyCommitRow } from "./commitAuthors";
+import { hideRowImmediately, resetCommitRow, hideCommitRow } from "./commitRowDisplay";
+import { commitPageSelectors, GIT_MATTER_CLASSES } from "./selectors";
+import { visibleCommitRoots, mountHiddenCommitStreak, mountHiddenCommitToggle } from "./commitVisibilityControls";
 import type { FilteredCommitDisplayMode } from "../types";
 import type { HiddenGroup } from "./types";
-import {
-  visibleCommitRoots,
-  mountHiddenCommitStreak,
-  mountHiddenCommitToggle,
-} from "./commitVisibilityControls";
 
+import { collectCommitPanels, collectCommitRowsInPanel, collectFilteredCommitRows } from "./commitDetection";
+import { applyDimmedDisplay } from "./commitDimDisplay";
+import { setupCommitObserver, runInitialFiltering } from "./commitObserver";
+
+// State
 let commitDisplayMode: FilteredCommitDisplayMode = "hide";
-let navigationId = 0;
-let currentNavigationId = 0;
 
-function applyDisplayModeToCommitRow(row: HTMLElement): void {
-  if (commitDisplayMode === "off") {
-    resetCommitRow(row);
-    return;
-  }
-
-  if (!isBotOnlyCommitRow(row)) {
-    return;
-  }
-
-  if (commitDisplayMode === "dim") {
-    dimCommitRow(row);
-  }
-}
-
-function collectFilteredCommitRows(panels: HTMLElement[]): HTMLElement[] {
-  const filteredRows: HTMLElement[] = [];
-
-  panels.forEach((panel) => {
-    const commitRows = Array.from(
-      panel.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow),
-    );
-
-    commitRows.forEach((row) => {
-      if (isBotOnlyCommitRow(row)) {
-        filteredRows.push(row);
-      }
-    });
-  });
-
-  return filteredRows;
-}
-
+// Reset
 function resetAllCommitDisplayState(): void {
   visibleCommitRoots.forEach((root) => root.unmount());
   visibleCommitRoots.clear();
@@ -63,58 +28,22 @@ function resetAllCommitDisplayState(): void {
   rowsToReset.forEach(resetCommitRow);
 }
 
-function executeCommitDisplayPipeline() {
-  const commitPanels = collectCommitPanels();
-  const filteredRows = collectFilteredCommitRows(commitPanels);
-
-  switch (commitDisplayMode) {
-    case "off":
-      resetAllCommitDisplayState();
-      break;
-
-    case "dim":
-      applyDimmedCommitDisplay(filteredRows);
-      break;
-
-    case "hide":
-      applyHiddenCommitDisplay(filteredRows, commitPanels);
-      break;
-  }
-}
-
-function collectCommitPanels(): HTMLElement[] {
-  return Array.from(
-    document.querySelectorAll<HTMLElement>(
-      commitPageSelectors.commitGroupPanel,
-    ),
-  );
-}
-
-function applyDimmedCommitDisplay(filteredRows: HTMLElement[]): void {
-  filteredRows.forEach((row) => {
-    resetCommitRow(row);
-    dimCommitRow(row);
-  });
-}
-
-function applyHiddenCommitDisplay(
+// Hide Mode
+function applyHiddenDisplayWithControls(
   filteredRows: HTMLElement[],
   commitPanels: HTMLElement[],
 ): void {
   filteredRows.forEach(hideCommitRow);
 
   const panelsWithHiddenRows = commitPanels.filter((panel) => {
-    const rowsInPanel = panel.querySelectorAll<HTMLElement>(
-      commitPageSelectors.commitRow,
-    );
-    return Array.from(rowsInPanel).some((row) => filteredRows.includes(row));
+    const rowsInPanel = collectCommitRowsInPanel(panel);
+    return rowsInPanel.some((row) => filteredRows.includes(row));
   });
 
   let hiddenStreak: HiddenGroup[] = [];
 
-  function flushHiddenStreak() {
+  function flushStreak() {
     if (hiddenStreak.length === 0) return;
-
     if (hiddenStreak.length >= 2) {
       mountHiddenCommitStreak(hiddenStreak);
     } else {
@@ -123,31 +52,20 @@ function applyHiddenCommitDisplay(
       const panel = single.hiddenRows[0].closest(
         commitPageSelectors.commitGroupPanel,
       ) as HTMLElement | null;
-      if (panel) {
-        mountHiddenCommitToggle(panel, single.hiddenRows, false);
-      }
+      if (panel) mountHiddenCommitToggle(panel, single.hiddenRows, false);
     }
-
     hiddenStreak = [];
   }
 
-  panelsWithHiddenRows.forEach((panel) => {
-    if (panel.querySelector(".git-matter-processed")) return;
-
-    const timelineRow = panel.closest(
-      commitPageSelectors.timelineRow,
-    ) as HTMLElement | null;
+panelsWithHiddenRows.forEach((panel) => {
+    if (panel.querySelector(GIT_MATTER_CLASSES.processedMarker)) return;
+    const timelineRow = panel.closest(commitPageSelectors.timelineRow) as HTMLElement | null;
     if (!timelineRow) return;
 
-    const commitRows = Array.from(
-      panel.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow),
-    );
+    const commitRows = collectCommitRowsInPanel(panel);
     if (commitRows.length === 0) return;
 
-    const panelHiddenRows = commitRows.filter((row) =>
-      filteredRows.includes(row),
-    );
-
+    const panelHiddenRows = commitRows.filter((row) => filteredRows.includes(row));
     const visibleCount = commitRows.length - panelHiddenRows.length;
 
     const marker = document.createElement("div");
@@ -161,14 +79,30 @@ function applyHiddenCommitDisplay(
       return;
     }
 
-    flushHiddenStreak();
-
+    flushStreak();
     if (panelHiddenRows.length > 0) {
       mountHiddenCommitToggle(panel, panelHiddenRows, true);
     }
   });
 
-  flushHiddenStreak();
+  flushStreak();
+}
+
+function runFullDisplayPipeline(): void {
+  const panels = collectCommitPanels();
+  const filteredRows = collectFilteredCommitRows(panels);
+
+  switch (commitDisplayMode) {
+    case "off":
+      resetAllCommitDisplayState();
+      break;
+    case "dim":
+      applyDimmedDisplay(filteredRows);
+      break;
+    case "hide":
+      applyHiddenDisplayWithControls(filteredRows, panels);
+      break;
+  }
 }
 
 export type { FilteredCommitDisplayMode };
@@ -179,74 +113,14 @@ export function setCommitDisplayMode(mode: FilteredCommitDisplayMode): void {
 
 export function runCommitFiltering(): void {
   resetAllCommitDisplayState();
-  executeCommitDisplayPipeline();
+  runFullDisplayPipeline();
 }
 
 export const initializeCommitFiltering = runOnce(() => {
-  let pendingTimeoutId: ReturnType<typeof setTimeout> | undefined;
-
-  function scheduleFullReconciliation(): void {
-    clearTimeout(pendingTimeoutId);
-    pendingTimeoutId = setTimeout(() => {
-      if (currentNavigationId !== navigationId) {
-        return;
-      }
-      resetAllCommitDisplayState();
-      executeCommitDisplayPipeline();
-    }, 300);
-  }
-
-  const hasUrlChanged = createDirtyTracker(() => location.href);
-
-  const hasNewCommitNodes = (mutations: MutationRecord[]) => {
-    return mutations.some((mutation) =>
-      Array.from(mutation.addedNodes).some((node) => {
-        if (!(node instanceof HTMLElement)) return false;
-        if (node.closest("[data-git-matter-component]")) return false;
-        return node.querySelector<HTMLElement>(commitPageSelectors.commitRow);
-      }),
-    );
-  };
-
-  function processImmediateCommitRows(nodes: NodeList): void {
-    nodes.forEach((node) => {
-      if (!(node instanceof HTMLElement)) return;
-      if (node.closest("[data-git-matter-component]")) return;
-
-      const newRows = node.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow);
-      newRows.forEach(applyDisplayModeToCommitRow);
-    });
-  }
-
-  new MutationObserver((mutations) => {
-    const urlChanged = hasUrlChanged();
-    const hasNewNodes = hasNewCommitNodes(mutations);
-
-    if (urlChanged) {
-      navigationId++;
-      currentNavigationId = navigationId;
-      resetAllCommitDisplayState();
-    }
-
-    if (hasNewNodes) {
-      mutations.forEach((mutation) => {
-        processImmediateCommitRows(mutation.addedNodes);
-      });
-    }
-
-    if (urlChanged || hasNewNodes) {
-      scheduleFullReconciliation();
-    }
-  }).observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
-
-  // Run immediately on initial page load - no debounce needed since page is already ready
-  // Use debounced version only for GitHub-driven DOM changes (navigation, filters, etc.)
-  if (document.readyState === "loading") {
-    window.addEventListener("DOMContentLoaded", runCommitFiltering, { once: true });
-  } else {
-    runCommitFiltering();
-  }
+  setupCommitObserver(
+    () => commitDisplayMode,
+    runFullDisplayPipeline,
+    resetAllCommitDisplayState,
+  );
+  runInitialFiltering(runFullDisplayPipeline);
 });

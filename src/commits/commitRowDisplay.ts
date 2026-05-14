@@ -1,4 +1,6 @@
-const DIMMED_CLASS = "git-matter-dimmed-commit";
+import { GIT_MATTER_CLASSES } from "./selectors";
+
+const DIMMED_CLASS = GIT_MATTER_CLASSES.dimmed;
 
 function animateRow(
   row: HTMLElement,
