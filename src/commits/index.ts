@@ -1,4 +1,3 @@
-import { debounce } from "../utils/debounce";
 import { runOnce } from "../utils/runOnce";
 import { createDirtyTracker } from "../utils/createDirtyTracker";
 import { hideRowImmediately, resetCommitRow, dimCommitRow, hideCommitRow } from "./commitRowDisplay";
@@ -13,6 +12,23 @@ import {
 } from "./commitVisibilityControls";
 
 let commitDisplayMode: FilteredCommitDisplayMode = "hide";
+let navigationId = 0;
+let currentNavigationId = 0;
+
+function applyDisplayModeToCommitRow(row: HTMLElement): void {
+  if (commitDisplayMode === "off") {
+    resetCommitRow(row);
+    return;
+  }
+
+  if (!isBotOnlyCommitRow(row)) {
+    return;
+  }
+
+  if (commitDisplayMode === "dim") {
+    dimCommitRow(row);
+  }
+}
 
 function collectFilteredCommitRows(panels: HTMLElement[]): HTMLElement[] {
   const filteredRows: HTMLElement[] = [];
@@ -167,9 +183,18 @@ export function runCommitFiltering(): void {
 }
 
 export const initializeCommitFiltering = runOnce(() => {
-  const scheduleRerun = debounce(() => {
-    runCommitFiltering();
-  }, 300);
+  let pendingTimeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  function scheduleFullReconciliation(): void {
+    clearTimeout(pendingTimeoutId);
+    pendingTimeoutId = setTimeout(() => {
+      if (currentNavigationId !== navigationId) {
+        return;
+      }
+      resetAllCommitDisplayState();
+      executeCommitDisplayPipeline();
+    }, 300);
+  }
 
   const hasUrlChanged = createDirtyTracker(() => location.href);
 
@@ -177,34 +202,51 @@ export const initializeCommitFiltering = runOnce(() => {
     return mutations.some((mutation) =>
       Array.from(mutation.addedNodes).some((node) => {
         if (!(node instanceof HTMLElement)) return false;
-
-        // Prevent detecting nodes WE ourselves added to avoid infinite loops.
-        if (node.closest("[data-git-matter-component]")) {
-          return false;
-        }
-
-        return node.querySelector<HTMLElement>(
-          commitPageSelectors.commitRow,
-        );
+        if (node.closest("[data-git-matter-component]")) return false;
+        return node.querySelector<HTMLElement>(commitPageSelectors.commitRow);
       }),
     );
   };
 
-  // Observe DOM changes to re-apply filtering when new commits are loaded
-  // this occurs when the user clicks previous or next page, or filters by date.
+  function processImmediateCommitRows(nodes: NodeList): void {
+    nodes.forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
+      if (node.closest("[data-git-matter-component]")) return;
+
+      const newRows = node.querySelectorAll<HTMLElement>(commitPageSelectors.commitRow);
+      newRows.forEach(applyDisplayModeToCommitRow);
+    });
+  }
+
   new MutationObserver((mutations) => {
-    if (hasUrlChanged() || hasNewCommitNodes(mutations)) {
-      scheduleRerun();
+    const urlChanged = hasUrlChanged();
+    const hasNewNodes = hasNewCommitNodes(mutations);
+
+    if (urlChanged) {
+      navigationId++;
+      currentNavigationId = navigationId;
+      resetAllCommitDisplayState();
+    }
+
+    if (hasNewNodes) {
+      mutations.forEach((mutation) => {
+        processImmediateCommitRows(mutation.addedNodes);
+      });
+    }
+
+    if (urlChanged || hasNewNodes) {
+      scheduleFullReconciliation();
     }
   }).observe(document.body, {
     childList: true,
     subtree: true,
   });
 
-  // This does our initial run
+  // Run immediately on initial page load - no debounce needed since page is already ready
+  // Use debounced version only for GitHub-driven DOM changes (navigation, filters, etc.)
   if (document.readyState === "loading") {
-    window.addEventListener("DOMContentLoaded", scheduleRerun, { once: true });
+    window.addEventListener("DOMContentLoaded", runCommitFiltering, { once: true });
   } else {
-    scheduleRerun();
+    runCommitFiltering();
   }
 });
