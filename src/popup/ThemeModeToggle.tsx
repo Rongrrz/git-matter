@@ -1,25 +1,23 @@
-import type { PopupThemeMode } from "../types";
+import type { PopupTheme } from "../types";
 
-const OPTIONS: { value: PopupThemeMode; label: string }[] = [
+const OPTIONS: { value: PopupTheme; label: string }[] = [
   { value: "auto", label: "Auto" },
   { value: "light", label: "Light" },
   { value: "dark", label: "Dark" },
 ];
 
 type Props = {
-  mode: PopupThemeMode;
+  mode: PopupTheme;
   borderClassName: string;
   mutedTextClassName: string;
   selectedClassName: string;
-  onChange: (mode: PopupThemeMode) => void;
+  onChange: (mode: PopupTheme) => void;
 };
 
 export function ThemeModeToggle(props: Props) {
   return (
     <fieldset className={`mt-4 border-t pt-4 ${props.borderClassName}`}>
-      <legend className={`mb-2 text-xs font-medium ${props.mutedTextClassName}`}>
-        Theme
-      </legend>
+      <legend className={`mb-2 text-xs font-medium ${props.mutedTextClassName}`}>Theme</legend>
       <div className={`grid grid-cols-3 rounded border p-0.5 ${props.borderClassName}`}>
         {OPTIONS.map((option) => (
           <label

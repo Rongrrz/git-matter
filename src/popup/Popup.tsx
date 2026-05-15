@@ -1,28 +1,24 @@
 import { useState, useEffect } from "react";
+import { type CommitVisibilityMode, type PopupTheme } from "../types";
 import {
-  type CommitVisibilityMode,
-  type PopupThemeMode,
-  DEFAULT_COMMIT_VISIBILITY_MODE,
-  DEFAULT_POPUP_THEME_MODE,
-} from "../types";
-import {
-  getStoredCommitVisibilityMode,
-  getStoredPopupThemeMode,
-  setStoredCommitVisibilityMode,
-  setStoredPopupThemeMode,
+  getStoredCommitVisibility,
+  getStoredPopupTheme,
+  setStoredCommitVisibility,
+  setStoredPopupTheme,
 } from "../storage";
 import { CommitVisibilityOptions } from "./CommitVisibilityOptions";
-import { getPopupThemeClasses, resolvePopupColorMode } from "./githubTheme";
+import { getPopupThemeClasses, resolvePopupColorMode } from "./themeColor";
 import { ThemeModeToggle } from "./ThemeModeToggle";
+import { CommitVisibility_DEFAULT, PopupTheme_DEFAULT } from "../constants/storage";
 
 export function Popup() {
-  const [mode, setMode] = useState<CommitVisibilityMode>(DEFAULT_COMMIT_VISIBILITY_MODE);
-  const [themeMode, setThemeMode] = useState<PopupThemeMode>(DEFAULT_POPUP_THEME_MODE);
+  const [mode, setMode] = useState<CommitVisibilityMode>(CommitVisibility_DEFAULT);
+  const [themeMode, setThemeMode] = useState<PopupTheme>(PopupTheme_DEFAULT);
   const [loading, setLoading] = useState(true);
   const theme = getPopupThemeClasses(resolvePopupColorMode(themeMode));
 
   useEffect(() => {
-    Promise.all([getStoredCommitVisibilityMode(), getStoredPopupThemeMode()]).then(
+    Promise.all([getStoredCommitVisibility(), getStoredPopupTheme()]).then(
       ([storedMode, storedThemeMode]) => {
         setMode(storedMode);
         setThemeMode(storedThemeMode);
@@ -33,13 +29,13 @@ export function Popup() {
 
   async function handleModeChange(newMode: CommitVisibilityMode) {
     setMode(newMode);
-    await setStoredCommitVisibilityMode(newMode);
+    await setStoredCommitVisibility(newMode);
     await sendCommitVisibilityModeToActiveTab(newMode);
   }
 
-  async function handleThemeModeChange(newMode: PopupThemeMode) {
+  async function handleThemeModeChange(newMode: PopupTheme) {
     setThemeMode(newMode);
-    await setStoredPopupThemeMode(newMode);
+    await setStoredPopupTheme(newMode);
   }
 
   if (loading) {

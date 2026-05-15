@@ -1,11 +1,11 @@
-import type { ColorMode, PopupThemeMode } from "../types";
-import { getBrowserColorMode } from "../utils/colorMode";
+import type { ThemeColor, PopupTheme } from "../types";
+import { getCurrentSiteColorMode } from "../utils/colorMode";
 
-export function resolvePopupColorMode(mode: PopupThemeMode): ColorMode {
-  return mode === "auto" ? getBrowserColorMode() : mode;
+export function resolvePopupColorMode(mode: PopupTheme): ThemeColor {
+  return mode === "auto" ? getCurrentSiteColorMode() : mode;
 }
 
-export function getPopupThemeClasses(mode: ColorMode) {
+export function getPopupThemeClasses(mode: ThemeColor) {
   if (mode === "dark") {
     return {
       shell: "w-64 bg-[#0d1117] p-4 font-sans text-sm text-[#e6edf3]",

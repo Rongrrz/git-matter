@@ -1,14 +1,7 @@
 import "./index.css";
 import { initializeCommitFiltering, runCommitFiltering, setCommitVisibilityMode } from "./commits";
-import { getStoredCommitVisibilityMode } from "./storage";
+import { getStoredCommitVisibility } from "./storage";
 import type { ExtensionMessage } from "./types";
-
-async function initialize(): Promise<void> {
-  const mode = await getStoredCommitVisibilityMode();
-  setCommitVisibilityMode(mode);
-  initializeCommitFiltering();
-}
-initialize();
 
 chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
   if (message.type === "SET_COMMIT_VISIBILITY_MODE") {
@@ -17,5 +10,12 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
   }
 });
 
-// eslint-disable-next-line no-console
-console.log("Git Matter content script loaded");
+async function initialize(): Promise<void> {
+  const mode = await getStoredCommitVisibility();
+  setCommitVisibilityMode(mode);
+  initializeCommitFiltering();
+
+  // TODO: remove on release
+  console.log("Git Matter content script loaded");
+}
+initialize();
