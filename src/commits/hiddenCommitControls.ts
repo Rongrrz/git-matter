@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { HiddenCommitsStreak } from "../components/HiddenCommitsStreak";
 import { HiddenCommitsToggle } from "../components/HiddenCommitsToggle";
 import { createReactMount } from "../utils/createReactMount";
-import { commitPageSelectors } from "./selectors";
+import { CommitPageSelectors } from "./selectors";
 import { hideRow, revealRow } from "./commitVisibility";
 import type { CommitPanelItem, HiddenPanelGroup, MountedControl } from "./types";
 
@@ -27,7 +27,9 @@ export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
     if (streak.length === 1) {
       const [group] = streak;
       revealRow(group.timelineRow);
-      const panel = group.hiddenRows[0].closest<HTMLElement>(commitPageSelectors.commitGroupPanel);
+      const panel = group.hiddenRows[0].closest<HTMLElement>(
+        CommitPageSelectors.commitGroupPanel,
+      );
       if (panel) {
         mountToggle(panel, group.hiddenRows, false);
       }

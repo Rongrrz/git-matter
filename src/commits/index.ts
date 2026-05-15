@@ -1,4 +1,5 @@
-import type { CommitVisibilityMode } from "../types";
+import type { CommitVisibilityMode, ExtensionMessage } from "../types";
+import { getStoredCommitVisibility } from "../storage";
 import { runOnce } from "../utils/runOnce";
 import { collectCommitPageItems } from "./commitPageItems";
 import { applyCommitVisibility, resetAllCommitVisibility } from "./commitVisibility";
@@ -7,7 +8,11 @@ import { observeCommitPage } from "./commitPageObserver";
 
 let commitVisibilityMode: CommitVisibilityMode = "hide";
 
-function reconcileCommitPage(): void {
+/**
+ * Resets the commit page and re-applies DOM changes based on the current mode.
+ */
+export function runCommitFiltering(): void {
+  resetAllCommitVisibility();
   const items = collectCommitPageItems();
 
   clearHiddenCommitControls();
@@ -18,28 +23,31 @@ function reconcileCommitPage(): void {
   }
 }
 
-function clearInjectedUi(): void {
-  clearHiddenCommitControls();
-}
 
-export function setCommitVisibilityMode(mode: CommitVisibilityMode): void {
-  commitVisibilityMode = mode;
-}
+// This is where ~ALL~ the magic happens
+export const initializeCommitFiltering = runOnce(async () => {
+  commitVisibilityMode = await getStoredCommitVisibility();
 
-export function runCommitFiltering(): void {
-  clearHiddenCommitControls();
-  resetAllCommitVisibility();
-  reconcileCommitPage();
-}
+  // Set up observer for DOM changes
+  observeCommitPage({
+    getMode: () => commitVisibilityMode,
+    filter: runCommitFiltering,
+    onPageChange: clearHiddenCommitControls,
+  });
 
-export const initializeCommitFiltering = runOnce(() => {
-  observeCommitPage(() => commitVisibilityMode, reconcileCommitPage, clearInjectedUi);
+  // Set up listener for popup setting changes.
+  chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
+    if (message.type !== "SET_COMMIT_VISIBILITY_MODE") return;
+    commitVisibilityMode = message.mode;
+    runCommitFiltering();
+  });
 
+  // Initial reconciliation when we first load the page.
   if (document.readyState === "loading") {
-    window.addEventListener("DOMContentLoaded", reconcileCommitPage, {
+    window.addEventListener("DOMContentLoaded", runCommitFiltering, {
       once: true,
     });
   } else {
-    reconcileCommitPage();
+    runCommitFiltering();
   }
 });

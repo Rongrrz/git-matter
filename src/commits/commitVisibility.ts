@@ -1,5 +1,5 @@
 import type { CommitVisibilityMode } from "../types";
-import { commitPageSelectors, GIT_MATTER_CLASSES } from "./selectors";
+import { CommitPageSelectors, GitMatterSelectors } from "./selectors";
 import type { CommitItem, CommitPanelItem } from "./types";
 
 function stopRowAnimations(row: HTMLElement): void {
@@ -9,18 +9,18 @@ function stopRowAnimations(row: HTMLElement): void {
 export function resetRow(row: HTMLElement): void {
   stopRowAnimations(row);
   row.style.display = "";
-  row.classList.remove(GIT_MATTER_CLASSES.dimmed);
+  row.classList.remove(GitMatterSelectors.dimmed);
 }
 
 export function dimRow(row: HTMLElement): void {
   stopRowAnimations(row);
   row.style.display = "";
-  row.classList.add(GIT_MATTER_CLASSES.dimmed);
+  row.classList.add(GitMatterSelectors.dimmed);
 }
 
 export function hideRow(row: HTMLElement): void {
   stopRowAnimations(row);
-  row.classList.remove(GIT_MATTER_CLASSES.dimmed);
+  row.classList.remove(GitMatterSelectors.dimmed);
   row.style.display = "none";
 }
 
@@ -29,11 +29,11 @@ export function revealRow(row: HTMLElement): void {
   row.style.display = "";
 }
 
-export function applyCommitVisibility(items: CommitPanelItem[], mode: CommitVisibilityMode): void {
-  items.forEach((item) => {
-    resetRow(item.timelineRow);
+export function applyCommitVisibility(panels: CommitPanelItem[], mode: CommitVisibilityMode): void {
+  panels.forEach((panel) => {
+    resetRow(panel.timelineRow);
 
-    item.commits.forEach((commit) => {
+    panel.commits.forEach((commit) => {
       applySingleCommitVisibility(commit, mode);
     });
   });
@@ -53,5 +53,5 @@ export function applySingleCommitVisibility(commit: CommitItem, mode: CommitVisi
 }
 
 export function resetAllCommitVisibility(): void {
-  document.querySelectorAll<HTMLElement>(commitPageSelectors.rowsToReset).forEach(resetRow);
+  document.querySelectorAll<HTMLElement>(CommitPageSelectors.allCommitPageRows).forEach(resetRow);
 }
