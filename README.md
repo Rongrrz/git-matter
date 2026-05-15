@@ -1,11 +1,13 @@
-A browser extension to only show commits that matters.
+# Git Matter
 
-TODOS:
-- Leverage browser AI to generate tags (think conventional commits) and "importance signal" for non-bot commits.
-- (DONE) Option to dim unimportant commits rather than hiding them.
-- GitHub Actions and CI/CD.
-- Better popup (adapts to browser light/dark mode preferences).
-- Comment utility functions.
-- Remove redundant Tailwind-CSS from components.
-- Dimming/Hiding option for Pull Requests, too.
-- Automatically dim non-bots, but unimportant commits.
+Git Matter is a browser extension that aims to make GitHub commit history easier to read by filtering, dimming, and organizing commits based on who authored them.
+
+Instead of forcing you to visually scan through commit pages full of Dependabots and Renovates, Git Matter gives you cleaner commit views so you can focus on the changes that actually matter.
+
+## Features
+- Hide or dim commits from bots
+- Groups hidden commits into clean streak indicators
+- Works directly on GitHub commit history pages
+- Lightweight and focused on improving GitHub’s existing UI
+
+This project is still currently in development and I hope to one day make it available as a downloadable extension right from the browser!
