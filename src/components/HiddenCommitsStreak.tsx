@@ -1,5 +1,5 @@
 import { pluralize } from "../utils/pluralize";
-import { HiddenCommitsButton } from "./HiddenCommitsButton";
+import { HiddenCommitsButton } from "./common/HiddenCommitsButton";
 
 const CLASS_NAME = [
   "text-sm",

@@ -6,9 +6,9 @@ import {
   setStoredCommitVisibility,
   setStoredPopupTheme,
 } from "../storage";
-import { CommitVisibilityOptions } from "./CommitVisibilityOptions";
+import { CommitVisibilityOptions } from "./CommitVisibilityToggle";
 import { getPopupThemeClasses, resolvePopupColorMode } from "./themeColor";
-import { ThemeModeToggle } from "./ThemeModeToggle";
+import { ThemeModeToggle } from "./ThemeColorToggle";
 import { CommitVisibility_DEFAULT, PopupTheme_DEFAULT } from "../constants/storage";
 
 export function Popup() {
@@ -48,8 +48,9 @@ export function Popup() {
 
       <CommitVisibilityOptions
         mode={mode}
+        borderClassName={theme.border}
         mutedTextClassName={theme.mutedText}
-        optionClassName={theme.option}
+        selectedClassName={theme.selected}
         onChange={handleModeChange}
       />
 

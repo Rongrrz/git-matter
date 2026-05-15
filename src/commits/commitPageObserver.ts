@@ -1,19 +1,23 @@
 import type { CommitVisibilityMode } from "../types";
-import { CommitPageSelectors, GitMatterSelectosr } from "./selectors";
+import { CommitPageSelectors, GitMatterSelectors } from "./selectors";
 import { collectCommitRowsFromNode } from "./commitPageItems";
 import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
 import { applySingleCommitVisibility } from "./commitVisibility";
 
-export function observeCommitPage(
-  getMode: () => CommitVisibilityMode,
-  reconcile: () => void,
-  onPageChange: () => void,
-): void {
+export function observeCommitPage({
+  getMode,
+  filter,
+  onPageChange,
+}: {
+  getMode: () => CommitVisibilityMode;
+  filter: () => void;
+  onPageChange: () => void;
+}): void {
   let pageChangeId = 0;
   let pendingFrameId: number | undefined;
   let currentUrl = location.href;
 
-  function scheduleReconcile(): void {
+  function scheduleFiltering(): void {
     const scheduledPageChangeId = pageChangeId;
     if (pendingFrameId !== undefined) {
       cancelAnimationFrame(pendingFrameId);
@@ -22,7 +26,7 @@ export function observeCommitPage(
     pendingFrameId = requestAnimationFrame(() => {
       pendingFrameId = undefined;
       if (scheduledPageChangeId !== pageChangeId) return;
-      reconcile();
+      filter();
     });
   }
 
@@ -30,7 +34,7 @@ export function observeCommitPage(
     pageChangeId++;
     currentUrl = location.href;
     onPageChange();
-    scheduleReconcile();
+    scheduleFiltering();
   }
 
   observeNavigation(handlePageChange);
@@ -54,7 +58,7 @@ export function observeCommitPage(
     });
 
     if (shouldReconcile) {
-      scheduleReconcile();
+      scheduleFiltering();
     }
   });
 
@@ -122,8 +126,8 @@ function removedCommitPageContent(nodes: NodeList): boolean {
 
 function isGitMatterNode(node: HTMLElement): boolean {
   return Boolean(
-    node.closest(`[${GitMatterSelectosr.componentMarker}]`) ||
-    node.matches(`[${GitMatterSelectosr.componentMarker}]`),
+    node.closest(`[${GitMatterSelectors.componentMarker}]`) ||
+    node.matches(`[${GitMatterSelectors.componentMarker}]`),
   );
 }
 

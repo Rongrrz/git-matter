@@ -1,3 +1,6 @@
+// Accesses the browser's storage to get and set user preferences
+// for commit visibility and popup theme.
+
 import {
   CommitVisibility_DEFAULT,
   CommitVisibility_KEY,

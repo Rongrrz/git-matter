@@ -10,9 +10,10 @@ const BaseCommitPageSelectors = {
   commitAuthorAria: '[aria-label^="commits by "]',
 };
 
-const allCommitPageRows = [BaseCommitPageSelectors.commitRow, BaseCommitPageSelectors.timelineRow].join(
-  ", ",
-);
+const allCommitPageRows = [
+  BaseCommitPageSelectors.commitRow,
+  BaseCommitPageSelectors.timelineRow,
+].join(", ");
 
 const pageStructure = [
   BaseCommitPageSelectors.commitRow,
@@ -28,7 +29,7 @@ export const CommitPageSelectors = {
 
 // GitMatter class names selectors, used for injected UI and visual states
 // TODO: Extract once we have features beyond commit-filtering.
-export const GitMatterSelectosr = {
+export const GitMatterSelectors = {
   dimmed: "git-matter-dimmed-commit",
   componentMarker: "data-git-matter-component",
 } as const;
