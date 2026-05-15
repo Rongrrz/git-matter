@@ -27,9 +27,7 @@ export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
     if (streak.length === 1) {
       const [group] = streak;
       revealRow(group.timelineRow);
-      const panel = group.hiddenRows[0].closest<HTMLElement>(
-        CommitPageSelectors.commitGroupPanel,
-      );
+      const panel = group.hiddenRows[0].closest<HTMLElement>(CommitPageSelectors.commitGroupPanel);
       if (panel) {
         mountToggle(panel, group.hiddenRows, false);
       }
