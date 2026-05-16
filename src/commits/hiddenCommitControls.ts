@@ -3,8 +3,8 @@ import { HiddenCommitsStreak } from "../components/HiddenCommitsStreak";
 import { HiddenCommitsToggle } from "../components/HiddenCommitsToggle";
 import { createReactMount } from "../utils/createReactMount";
 import { CommitPageSelectors } from "./selectors";
-import { hideRow, revealRow } from "./commitVisibility";
-import type { CommitPanelItem, HiddenPanelGroup, MountedControl } from "./types";
+import { visibilityControls } from "./commitVisibility";
+import type { CommitItem, CommitPanelItem, HiddenPanelGroup, MountedControl } from "./types";
 
 const controls = new Set<MountedControl>();
 
@@ -26,13 +26,12 @@ export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
 
     if (streak.length === 1) {
       const [group] = streak;
-      revealRow(group.timelineRow);
-      const panel = group.hiddenRows[0].closest<HTMLElement>(CommitPageSelectors.commitGroupPanel);
+      const panel = group.commits[0].row.closest<HTMLElement>(CommitPageSelectors.commitGroupPanel);
       if (panel) {
-        mountToggle(panel, group.hiddenRows, false);
+        mountToggle(panel, group.commits, false);
       }
     } else {
-      streak.forEach((group) => hideRow(group.timelineRow));
+      visibilityControls.setHiddenPanelGroupsExpanded(streak, false);
       mountStreak(streak);
     }
 
@@ -40,10 +39,10 @@ export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
   }
 
   items.forEach((item) => {
-    const hiddenRows = item.commits.filter((commit) => commit.filtered).map((commit) => commit.row);
-    const visibleCount = item.commits.length - hiddenRows.length;
+    const hiddenCommitCount = getHiddenCommitCount(item.commits);
+    const visibleCount = item.commits.length - hiddenCommitCount;
 
-    if (hiddenRows.length === 0) {
+    if (hiddenCommitCount === 0) {
       flushStreak();
       return;
     }
@@ -51,23 +50,20 @@ export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
     if (visibleCount === 0) {
       streak.push({
         timelineRow: item.timelineRow,
-        hiddenRows,
+        commits: item.commits,
       });
       return;
     }
 
     flushStreak();
-    mountToggle(item.panel, hiddenRows, true);
+    mountToggle(item.panel, item.commits, true);
   });
 
   flushStreak();
 }
 
-function mountToggle(
-  panel: HTMLElement,
-  hiddenRows: HTMLElement[],
-  hasVisibleBelow: boolean,
-): void {
+function mountToggle(panel: HTMLElement, commits: CommitItem[], hasVisibleBelow: boolean): void {
+  const hiddenCommitCount = getHiddenCommitCount(commits);
   const { container, root } = createReactMount("git-matter-toggle-root");
   container.dataset.gitMatterComponent = "";
   controls.add({ container, root });
@@ -78,17 +74,11 @@ function mountToggle(
     root.render(
       createElement(HiddenCommitsToggle, {
         expanded,
-        hiddenCommitCount: hiddenRows.length,
+        hiddenCommitCount,
         hasVisibleBelow,
         onToggle: () => {
           expanded = !expanded;
-          hiddenRows.forEach((row) => {
-            if (expanded) {
-              revealRow(row);
-            } else {
-              hideRow(row);
-            }
-          });
+          visibilityControls.setFilteredCommitsExpanded(commits, expanded);
           render();
         },
       }),
@@ -105,7 +95,10 @@ function mountStreak(groups: HiddenPanelGroup[]): void {
   controls.add({ container, root });
   firstGroup.timelineRow.parentElement?.insertBefore(container, firstGroup.timelineRow);
 
-  const hiddenCommitCount = groups.reduce((total, group) => total + group.hiddenRows.length, 0);
+  const hiddenCommitCount = groups.reduce(
+    (total, group) => total + getHiddenCommitCount(group.commits),
+    0,
+  );
 
   let expanded = false;
   const render = () => {
@@ -116,21 +109,7 @@ function mountStreak(groups: HiddenPanelGroup[]): void {
         hiddenDayCount: groups.length,
         onToggle: () => {
           expanded = !expanded;
-          groups.forEach((group) => {
-            if (expanded) {
-              revealRow(group.timelineRow);
-            } else {
-              hideRow(group.timelineRow);
-            }
-
-            group.hiddenRows.forEach((row) => {
-              if (expanded) {
-                revealRow(row);
-              } else {
-                hideRow(row);
-              }
-            });
-          });
+          visibilityControls.setHiddenPanelGroupsExpanded(groups, expanded);
           render();
         },
       }),
@@ -138,4 +117,8 @@ function mountStreak(groups: HiddenPanelGroup[]): void {
   };
 
   render();
+}
+
+function getHiddenCommitCount(commits: CommitItem[]): number {
+  return commits.filter((commit) => commit.filtered).length;
 }

@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
+.git-matter-hidden-commit {
+  display: none;
+}
+
 /* Reduce opacity of every non-hovered direct child of a dimmed commit. */
 .git-matter-dimmed-commit:not(:hover) > * {
   opacity: 0.45;
+}
+
+.git-matter-last-commit {
+  border-bottom: 0px;
 }

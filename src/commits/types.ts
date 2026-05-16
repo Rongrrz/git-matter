@@ -14,7 +14,7 @@ export type CommitPanelItem = {
 
 export type HiddenPanelGroup = {
   timelineRow: HTMLElement;
-  hiddenRows: HTMLElement[];
+  commits: CommitItem[];
 };
 
 export type MountedControl = {
