@@ -13,7 +13,6 @@
     "no-duplicate-imports": "error",
     "no-else-return": "error",
     "no-empty": "warn",
-    "no-extra-semi": "error",
     "no-inner-declarations": "error",
     "no-lonely-if": "error",
     "no-new-wrappers": "error",

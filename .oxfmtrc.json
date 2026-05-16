@@ -4,6 +4,11 @@
   "semi": true,
   "printWidth": 100,
   "trailingComma": "all",
+  "tabWidth": 2,
+  "useTabs": false,
+  "endOfLine": "lf",
+  "insertFinalNewline": true,
+  "ignorePatterns": ["node_modules/**", "dist/**", "build/**", "coverage/**"],
   "sortImports": true,
   "sortTailwindcss": {
     "functions": ["cn"]
