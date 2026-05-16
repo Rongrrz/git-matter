@@ -1,7 +1,7 @@
 import type { CommitVisibilityMode, ExtensionMessage } from "../types";
 import { getStoredCommitVisibility } from "../storage";
 import { runOnce } from "../utils/runOnce";
-import { collectCommitPageItems } from "./commitPageItems";
+import { getCommitPanels } from "./commitPageItems";
 import { CommitVisibility } from "./visibility";
 import { clearHiddenCommitControls, renderHiddenCommitControls } from "./hiddenCommitControls";
 import { observeCommitPage } from "./commitPageObserver";
@@ -13,7 +13,7 @@ let commitVisibilityMode: CommitVisibilityMode = "hide";
  */
 export function runCommitFiltering(): void {
   CommitVisibility.resetAll();
-  const items = collectCommitPageItems();
+  const items = getCommitPanels();
 
   clearHiddenCommitControls();
   CommitVisibility.applyPanel(items, commitVisibilityMode);

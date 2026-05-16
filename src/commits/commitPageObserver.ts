@@ -1,6 +1,6 @@
 import type { CommitVisibilityMode } from "../types";
 import { CommitPageSelectors, GitMatterSelectors } from "./selectors";
-import { collectCommitRowsFromNode } from "./commitPageItems";
+import { getCommitRowsFromNode } from "./commitPageItems";
 import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
 import { CommitVisibility } from "./visibility";
 
@@ -89,7 +89,7 @@ function applyVisibilityToAddedRows(nodes: NodeList, mode: CommitVisibilityMode)
     if (!(node instanceof HTMLElement)) return;
     if (isGitMatterNode(node)) return;
 
-    const rows = collectCommitRowsFromNode(node);
+    const rows = getCommitRowsFromNode(node);
     rows.forEach((row) => {
       const authors = getCommitAuthors(row);
       CommitVisibility.applySingle(
