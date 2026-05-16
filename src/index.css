@@ -9,6 +9,7 @@
   opacity: 0.45;
 }
 
+/* Needed because our last commit will change as we hide filtered commits */
 .git-matter-last-commit {
   border-bottom: 0px;
 }
