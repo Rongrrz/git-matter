@@ -1,4 +1,4 @@
-import { createRoot } from "react-dom/client";
+import { createRoot } from 'react-dom/client';
 
 /**
  * The container gives React a stable element to render into and lets us
@@ -8,7 +8,7 @@ import { createRoot } from "react-dom/client";
  * inherit surrounding layout and styling.
  */
 export function createReactMount(className: string) {
-  const container = document.createElement("div");
+  const container = document.createElement('div');
   container.className = className;
   const root = createRoot(container);
   return { container, root };

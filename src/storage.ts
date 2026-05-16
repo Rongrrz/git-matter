@@ -6,18 +6,18 @@ import {
   CommitVisibility_KEY,
   PopupTheme_DEFAULT,
   PopupTheme_KEY,
-} from "./constants/storage";
-import { type CommitVisibilityMode, type PopupTheme } from "./types";
+} from './constants/storage';
+import { type CommitVisibilityMode, type PopupTheme } from './types';
 
 export async function getStoredCommitVisibility(): Promise<CommitVisibilityMode> {
   const result = await readStorage(CommitVisibility_KEY);
   const stored = result[CommitVisibility_KEY] as string | undefined;
 
-  if (stored === "off" || stored === "dim" || stored === "hide") {
+  if (stored === 'off' || stored === 'dim' || stored === 'hide') {
     return stored;
-  } else {
-    return CommitVisibility_DEFAULT;
   }
+
+  return CommitVisibility_DEFAULT;
 }
 
 export async function setStoredCommitVisibility(visibility: CommitVisibilityMode): Promise<void> {
@@ -30,11 +30,11 @@ export async function getStoredPopupTheme(): Promise<PopupTheme> {
   const result = await readStorage(PopupTheme_KEY);
   const stored = result[PopupTheme_KEY] as string | undefined;
 
-  if (stored === "auto" || stored === "light" || stored === "dark") {
+  if (stored === 'auto' || stored === 'light' || stored === 'dark') {
     return stored;
-  } else {
-    return PopupTheme_DEFAULT;
   }
+
+  return PopupTheme_DEFAULT;
 }
 
 export async function setStoredPopupTheme(theme: PopupTheme): Promise<void> {

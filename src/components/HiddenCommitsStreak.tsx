@@ -1,19 +1,10 @@
-import { pluralize } from "../utils/pluralize";
-import { HiddenCommitsButton } from "./common/HiddenCommitsButton";
+import { cn } from '../utils/cn';
+import { pluralize } from '../utils/pluralize';
+import { HiddenCommitsButton } from './common/HiddenCommitsButton';
 
-const CLASS_NAME = [
-  "text-sm",
-  "font-medium",
-  "py-3",
-  "px-4",
-  "bg-(--bgColor-muted,rgba(110,118,129,0.1))",
-  "border",
-  "border-dashed",
-  "border-[var(--borderColor-muted)]",
-  "rounded-md",
-  "opacity-95",
-  "my-2",
-].join(" ");
+const CLASS_NAME = cn(
+  'my-2 rounded-md border border-dashed border-[var(--borderColor-muted)] bg-(--bgColor-muted,rgba(110,118,129,0.1)) px-4 py-3 text-sm font-medium opacity-95',
+);
 
 type Props = {
   expanded: boolean;
@@ -23,8 +14,8 @@ type Props = {
 };
 
 export function HiddenCommitsStreak(props: Props) {
-  const commitText = pluralize("commit", props.hiddenCommitCount);
-  const dayText = pluralize("day", props.hiddenDayCount);
+  const commitText = pluralize('commit', props.hiddenCommitCount);
+  const dayText = pluralize('day', props.hiddenDayCount);
 
   return (
     <HiddenCommitsButton className={CLASS_NAME} onClick={props.onToggle}>

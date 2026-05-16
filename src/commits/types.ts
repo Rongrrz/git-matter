@@ -10,4 +10,4 @@ export type CommitPanelItem = {
   commits: CommitItem[];
 };
 
-export type TimelineGroup = Omit<CommitPanelItem, "panel">;
+export type TimelineGroup = Omit<CommitPanelItem, 'panel'>;

@@ -1,14 +1,10 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
-const BASE_CLASS_NAME = [
-  "block",
-  "w-full",
-  "text-left",
-  "text-(--fgColor-muted)",
-  "cursor-pointer",
-  "hover:underline",
-  "hover:opacity-100",
-].join(" ");
+import { cn } from '../../utils/cn';
+
+const BASE_CLASS_NAME = cn(
+  'block w-full cursor-pointer text-left text-(--fgColor-muted) hover:underline hover:opacity-100',
+);
 
 type Props = {
   className: string;
@@ -21,7 +17,7 @@ export function HiddenCommitsButton(props: Props) {
   return (
     <button
       data-git-matter-component
-      className={`${BASE_CLASS_NAME} ${props.className}`}
+      className={cn(BASE_CLASS_NAME, props.className)}
       style={props.style}
       onClick={props.onClick}
     >

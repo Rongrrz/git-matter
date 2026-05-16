@@ -1,5 +1,5 @@
-import { _applyVisibility } from "./applyVisibility";
-import { _expansionControls } from "./expansionControls";
+import { _applyVisibility } from './applyVisibility';
+import { _expansionControls } from './expansionControls';
 
 export const CommitVisibility = {
   applyPanel: _applyVisibility.applyPanel,

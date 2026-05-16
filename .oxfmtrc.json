@@ -1,3 +1,12 @@
 {
-  "$schema": "./node_modules/oxfmt/configuration_schema.json"
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "semi": true,
+  "printWidth": 100,
+  "trailingComma": "all",
+  "sortImports": true,
+  "sortTailwindcss": {
+    "functions": ["cn"]
+  },
+  "sortPackageJson": true
 }

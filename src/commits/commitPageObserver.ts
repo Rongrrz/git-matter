@@ -1,8 +1,8 @@
-import type { CommitVisibilityMode } from "../types";
-import { CommitPageSelectors, GitMatterSelectors } from "./selectors";
-import { getCommitRowsFromNode } from "./getPanels";
-import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
-import { CommitVisibility } from "./visibility";
+import type { CommitVisibilityMode } from '../types';
+import { getCommitAuthors, shouldFilterCommit } from './authorFiltering';
+import { getCommitRowsFromNode } from './getPanels';
+import { CommitPageSelectors, GitMatterSelectors } from './selectors';
+import { CommitVisibility } from './visibility';
 
 export function observeCommitPage({
   getMode,
@@ -79,7 +79,7 @@ function observeNavigation(onChange: () => void): void {
     onChange();
   };
 
-  window.addEventListener("popstate", onChange);
+  window.addEventListener('popstate', onChange);
 }
 
 function applyVisibilityToAddedRows(nodes: NodeList, mode: CommitVisibilityMode): boolean {
@@ -138,7 +138,7 @@ function containsCommitPageStructure(node: HTMLElement): boolean {
         CommitPageSelectors.commitRow,
         CommitPageSelectors.commitGroupPanel,
         CommitPageSelectors.timelineRow,
-      ].join(", "),
+      ].join(', '),
     ),
   );
 }

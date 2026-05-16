@@ -1,6 +1,6 @@
-import type { CommitItem, TimelineGroup } from "../types";
-import { _lastCommitStyling } from "./lastCommitStyling";
-import { _rowState } from "./rowState";
+import type { CommitItem, TimelineGroup } from '../types';
+import { _lastCommitStyling } from './lastCommitStyling';
+import { _rowState } from './rowState';
 
 function setFilteredCommitsExpanded(commits: CommitItem[], expanded: boolean): void {
   const hiddenRows = commits.filter((commit) => commit.filtered).map((commit) => commit.row);

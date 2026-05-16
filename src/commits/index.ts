@@ -1,12 +1,12 @@
-import type { CommitVisibilityMode, ExtensionMessage } from "../types";
-import { getStoredCommitVisibility } from "../storage";
-import { runOnce } from "../utils/runOnce";
-import { getCommitPanels } from "./getPanels";
-import { CommitVisibility } from "./visibility";
-import { observeCommitPage } from "./commitPageObserver";
-import { HiddenCommitControls } from "./hiddenCommitControls/";
+import { getStoredCommitVisibility } from '../storage';
+import type { CommitVisibilityMode, ExtensionMessage } from '../types';
+import { runOnce } from '../utils/runOnce';
+import { observeCommitPage } from './commitPageObserver';
+import { getCommitPanels } from './getPanels';
+import { HiddenCommitControls } from './hiddenCommitControls/';
+import { CommitVisibility } from './visibility';
 
-let commitVisibilityMode: CommitVisibilityMode = "hide";
+let commitVisibilityMode: CommitVisibilityMode = 'hide';
 
 /**
  * Resets the commit page and re-applies DOM changes based on the current mode.
@@ -18,7 +18,7 @@ export function runCommitFiltering(): void {
   HiddenCommitControls.clear();
   CommitVisibility.applyPanel(items, commitVisibilityMode);
 
-  if (commitVisibilityMode === "hide") {
+  if (commitVisibilityMode === 'hide') {
     HiddenCommitControls.render(items);
   }
 }
@@ -36,14 +36,14 @@ export const initializeCommitFiltering = runOnce(async () => {
 
   // Set up listener for popup setting changes.
   chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
-    if (message.type !== "SET_COMMIT_VISIBILITY_MODE") return;
+    if (message.type !== 'SET_COMMIT_VISIBILITY_MODE') return;
     commitVisibilityMode = message.mode;
     runCommitFiltering();
   });
 
   // Initial reconciliation when we first load the page.
-  if (document.readyState === "loading") {
-    window.addEventListener("DOMContentLoaded", runCommitFiltering, {
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', runCommitFiltering, {
       once: true,
     });
   } else {

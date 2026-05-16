@@ -1,6 +1,6 @@
-import { CommitPageSelectors } from "./selectors";
-import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
-import type { CommitItem, CommitPanelItem } from "./types";
+import { getCommitAuthors, shouldFilterCommit } from './authorFiltering';
+import { CommitPageSelectors } from './selectors';
+import type { CommitItem, CommitPanelItem } from './types';
 
 export function getCommitPanels(): CommitPanelItem[] {
   const panels = document.querySelectorAll<HTMLElement>(CommitPageSelectors.commitGroupPanel);
