@@ -1,6 +1,6 @@
 import type { CommitVisibilityMode } from "../types";
 import { CommitPageSelectors, GitMatterSelectors } from "./selectors";
-import { getCommitRowsFromNode } from "./commitPageItems";
+import { getCommitRowsFromNode } from "./getPanels";
 import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
 import { CommitVisibility } from "./visibility";
 

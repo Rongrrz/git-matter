@@ -1,7 +1,7 @@
 import type { CommitVisibilityMode, ExtensionMessage } from "../types";
 import { getStoredCommitVisibility } from "../storage";
 import { runOnce } from "../utils/runOnce";
-import { getCommitPanels } from "./commitPageItems";
+import { getCommitPanels } from "./getPanels";
 import { CommitVisibility } from "./visibility";
 import { clearHiddenCommitControls, renderHiddenCommitControls } from "./hiddenCommitControls";
 import { observeCommitPage } from "./commitPageObserver";
