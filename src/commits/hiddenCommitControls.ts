@@ -3,7 +3,7 @@ import { HiddenCommitsStreak } from "../components/HiddenCommitsStreak";
 import { HiddenCommitsToggle } from "../components/HiddenCommitsToggle";
 import { createReactMount } from "../utils/createReactMount";
 import { CommitPageSelectors } from "./selectors";
-import { visibilityControls } from "./commitVisibility";
+import { CommitVisibility } from "./visibility";
 import type { CommitItem, CommitPanelItem, HiddenPanelGroup, MountedControl } from "./types";
 
 const controls = new Set<MountedControl>();
@@ -31,7 +31,7 @@ export function renderHiddenCommitControls(items: CommitPanelItem[]): void {
         mountToggle(panel, group.commits, false);
       }
     } else {
-      visibilityControls.setHiddenPanelGroupsExpanded(streak, false);
+      CommitVisibility.setHiddenPanelGroupsExpanded(streak, false);
       mountStreak(streak);
     }
 
@@ -78,7 +78,7 @@ function mountToggle(panel: HTMLElement, commits: CommitItem[], hasVisibleBelow:
         hasVisibleBelow,
         onToggle: () => {
           expanded = !expanded;
-          visibilityControls.setFilteredCommitsExpanded(commits, expanded);
+          CommitVisibility.setFilteredCommitsExpanded(commits, expanded);
           render();
         },
       }),
@@ -109,7 +109,7 @@ function mountStreak(groups: HiddenPanelGroup[]): void {
         hiddenDayCount: groups.length,
         onToggle: () => {
           expanded = !expanded;
-          visibilityControls.setHiddenPanelGroupsExpanded(groups, expanded);
+          CommitVisibility.setHiddenPanelGroupsExpanded(groups, expanded);
           render();
         },
       }),

@@ -2,7 +2,7 @@ import type { CommitVisibilityMode } from "../types";
 import { CommitPageSelectors, GitMatterSelectors } from "./selectors";
 import { collectCommitRowsFromNode } from "./commitPageItems";
 import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
-import { applySingleCommitVisibility } from "./commitVisibility";
+import { CommitVisibility } from "./visibility";
 
 export function observeCommitPage({
   getMode,
@@ -92,7 +92,7 @@ function applyVisibilityToAddedRows(nodes: NodeList, mode: CommitVisibilityMode)
     const rows = collectCommitRowsFromNode(node);
     rows.forEach((row) => {
       const authors = getCommitAuthors(row);
-      applySingleCommitVisibility(
+      CommitVisibility.applySingle(
         {
           row,
           authors,
