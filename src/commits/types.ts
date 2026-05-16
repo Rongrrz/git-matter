@@ -1,5 +1,3 @@
-import type { Root } from "react-dom/client";
-
 export type CommitItem = {
   row: HTMLElement;
   authors: string[];
@@ -12,12 +10,4 @@ export type CommitPanelItem = {
   commits: CommitItem[];
 };
 
-export type HiddenPanelGroup = {
-  timelineRow: HTMLElement;
-  hiddenRows: HTMLElement[];
-};
-
-export type MountedControl = {
-  container: HTMLElement;
-  root: Root;
-};
+export type TimelineGroup = Omit<CommitPanelItem, "panel">;

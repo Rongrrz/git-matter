@@ -2,7 +2,7 @@ import { CommitPageSelectors } from "./selectors";
 import { getCommitAuthors, shouldFilterCommit } from "./authorFiltering";
 import type { CommitItem, CommitPanelItem } from "./types";
 
-export function collectCommitPageItems(): CommitPanelItem[] {
+export function getCommitPanels(): CommitPanelItem[] {
   const panels = document.querySelectorAll<HTMLElement>(CommitPageSelectors.commitGroupPanel);
 
   return Array.from(panels).flatMap((panel) => {
@@ -25,7 +25,7 @@ export function collectCommitPageItems(): CommitPanelItem[] {
   });
 }
 
-export function collectCommitRowsFromNode(node: HTMLElement): HTMLElement[] {
+export function getCommitRowsFromNode(node: HTMLElement): HTMLElement[] {
   const rows: HTMLElement[] = [];
 
   if (node.matches(CommitPageSelectors.commitRow)) {
