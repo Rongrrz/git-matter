@@ -1,10 +1,10 @@
-import type { PopupTheme } from "../types";
-import { SegmentedControl } from "../components/common/SegmentedControl";
+import { SegmentedControl } from '../components/common/SegmentedControl';
+import type { PopupTheme } from '../types';
 
 const OPTIONS: { value: PopupTheme; label: string }[] = [
-  { value: "auto", label: "Auto" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
+  { value: 'auto', label: 'Auto' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
 ];
 
 type Props = {

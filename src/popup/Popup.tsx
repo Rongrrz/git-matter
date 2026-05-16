@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
-import { type CommitVisibilityMode, type PopupTheme } from "../types";
+import { useState, useEffect } from 'react';
+
+import { CommitVisibility_DEFAULT, PopupTheme_DEFAULT } from '../constants/storage';
 import {
   getStoredCommitVisibility,
   getStoredPopupTheme,
   setStoredCommitVisibility,
   setStoredPopupTheme,
-} from "../storage";
-import { CommitVisibilityOptions } from "./CommitVisibilityToggle";
-import { getPopupThemeClasses, resolvePopupColorMode } from "./themeColor";
-import { ThemeModeToggle } from "./ThemeColorToggle";
-import { CommitVisibility_DEFAULT, PopupTheme_DEFAULT } from "../constants/storage";
+} from '../storage';
+import { type CommitVisibilityMode, type PopupTheme } from '../types';
+import { CommitVisibilityOptions } from './CommitVisibilityToggle';
+import { getPopupThemeClasses, resolvePopupColorMode } from './themeColor';
+import { ThemeModeToggle } from './ThemeColorToggle';
 
 export function Popup() {
   const [mode, setMode] = useState<CommitVisibilityMode>(CommitVisibility_DEFAULT);
@@ -44,7 +45,7 @@ export function Popup() {
 
   return (
     <div className={theme.shell}>
-      <h1 className="text-lg font-semibold mb-4">Git Matter</h1>
+      <h1 className="mb-4 text-lg font-semibold">Git Matter</h1>
 
       <CommitVisibilityOptions
         mode={mode}
@@ -69,11 +70,11 @@ async function sendCommitVisibilityModeToActiveTab(mode: CommitVisibilityMode) {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
 
-  if (!tab.url?.includes("github.com")) return;
+  if (!tab.url?.includes('github.com')) return;
 
   await chrome.tabs
     .sendMessage(tab.id, {
-      type: "SET_COMMIT_VISIBILITY_MODE",
+      type: 'SET_COMMIT_VISIBILITY_MODE',
       mode,
     })
     .catch(() => undefined);

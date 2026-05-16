@@ -5,6 +5,7 @@ Git Matter is a browser extension that aims to make GitHub commit history easier
 Instead of forcing you to visually scan through commit pages full of Dependabots and Renovates, Git Matter gives you cleaner commit views so you can focus on the changes that actually matter.
 
 ## Features
+
 - Hide or dim commits from bots
 - Groups hidden commits into clean streak indicators
 - Works directly on GitHub commit history pages

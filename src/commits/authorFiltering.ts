@@ -1,7 +1,7 @@
-import { botAuthors } from "../constants/botAuthors";
-import { CommitPageSelectors } from "./selectors";
+import { botAuthors } from '../constants/botAuthors';
+import { CommitPageSelectors } from './selectors';
 
-const authorLabelPrefixes = ["commits by ", "committed by ", "authored by "];
+const authorLabelPrefixes = ['commits by ', 'committed by ', 'authored by '];
 
 function getAuthorFromLabel(label: string | null): string | null {
   if (!label) return null;
@@ -18,21 +18,21 @@ export function getCommitAuthors(row: HTMLElement): string[] {
   const authors = new Set<string>();
 
   const ariaElement = row.querySelector(CommitPageSelectors.commitAuthorAria);
-  const ariaAuthor = ariaElement?.getAttribute("aria-label") ?? null;
+  const ariaAuthor = ariaElement?.getAttribute('aria-label') ?? null;
   const authorFromAria = getAuthorFromLabel(ariaAuthor);
   if (authorFromAria) {
     authors.add(authorFromAria);
   }
 
   const authorLink = row.querySelector<HTMLAnchorElement>('a[href*="author="]');
-  const href = authorLink?.getAttribute("href");
+  const href = authorLink?.getAttribute('href');
   if (href) {
-    const author = new URL(href, location.origin).searchParams.get("author");
+    const author = new URL(href, location.origin).searchParams.get('author');
     if (author) authors.add(author);
   }
 
   row.querySelectorAll<HTMLElement>(CommitPageSelectors.commitAuthorText).forEach((element) => {
-    const author = getAuthorFromLabel(element.getAttribute("aria-label")) ?? element.textContent;
+    const author = getAuthorFromLabel(element.getAttribute('aria-label')) ?? element.textContent;
     if (author) authors.add(author);
   });
 

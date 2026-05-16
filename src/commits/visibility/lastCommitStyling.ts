@@ -1,5 +1,5 @@
-import { GitMatterSelectors } from "../selectors";
-import type { CommitItem } from "../types";
+import { GitMatterSelectors } from '../selectors';
+import type { CommitItem } from '../types';
 
 function clearLastCommitStyling(commits: CommitItem[]): void {
   commits.forEach((commit) => {

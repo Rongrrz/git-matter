@@ -8,20 +8,19 @@ const BaseCommitPageSelectors = {
   timelineRow: 'div[class*="TimelineRow-module__timelineRowItem"]',
   commitGroupPanel: 'div[class*="CommitGroup-module__panel"]',
   commitAuthorAria: '[aria-label^="commits by "]',
-  commitAuthorText:
-    '[data-testid*="author"], [class*="author"], [class*="Author"]',
+  commitAuthorText: '[data-testid*="author"], [class*="author"], [class*="Author"]',
 };
 
 const allCommitPageRows = [
   BaseCommitPageSelectors.commitRow,
   BaseCommitPageSelectors.timelineRow,
-].join(", ");
+].join(', ');
 
 const pageStructure = [
   BaseCommitPageSelectors.commitRow,
   BaseCommitPageSelectors.commitGroupPanel,
   BaseCommitPageSelectors.timelineRow,
-].join(", ");
+].join(', ');
 
 export const CommitPageSelectors = {
   ...BaseCommitPageSelectors,
@@ -32,8 +31,8 @@ export const CommitPageSelectors = {
 // GitMatter class names selectors, used for injected UI and visual states
 // TODO: Extract once we have features beyond commit-filtering.
 export const GitMatterSelectors = {
-  dimmed: "git-matter-dimmed-commit",
-  hidden: "git-matter-hidden-commit",
-  componentMarker: "data-git-matter-component",
-  lastCommit: "git-matter-last-commit",
+  dimmed: 'git-matter-dimmed-commit',
+  hidden: 'git-matter-hidden-commit',
+  componentMarker: 'data-git-matter-component',
+  lastCommit: 'git-matter-last-commit',
 } as const;

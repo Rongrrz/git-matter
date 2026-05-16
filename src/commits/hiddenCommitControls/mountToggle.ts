@@ -1,13 +1,14 @@
-import { createElement } from "react";
-import { HiddenCommitsToggle } from "../../components/HiddenCommitsToggle";
-import { CommitVisibility } from "../visibility";
-import type { CommitItem } from "../types";
-import { getFilteredCommitCount } from "../../utils/getFilteredCommitCount";
-import { _controlRegistry } from "./controlRegistry";
+import { createElement } from 'react';
+
+import { HiddenCommitsToggle } from '../../components/HiddenCommitsToggle';
+import { getFilteredCommitCount } from '../../utils/getFilteredCommitCount';
+import type { CommitItem } from '../types';
+import { CommitVisibility } from '../visibility';
+import { _controlRegistry } from './controlRegistry';
 
 function mountToggle(panel: HTMLElement, commits: CommitItem[], hasVisibleBelow: boolean): void {
   const hiddenCommitCount = getFilteredCommitCount(commits);
-  const root = _controlRegistry.mountControl("git-matter-toggle-root", (container) => {
+  const root = _controlRegistry.mountControl('git-matter-toggle-root', (container) => {
     panel.insertBefore(container, panel.firstChild);
   });
 

@@ -1,4 +1,4 @@
-import { GitMatterSelectors } from "../selectors";
+import { GitMatterSelectors } from '../selectors';
 
 function stopRowAnimations(row: HTMLElement): void {
   row.getAnimations().forEach((animation) => animation.cancel());

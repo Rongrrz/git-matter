@@ -1,7 +1,8 @@
-import { pluralize } from "../utils/pluralize";
-import { HiddenCommitsButton } from "./common/HiddenCommitsButton";
+import { cn } from '../utils/cn';
+import { pluralize } from '../utils/pluralize';
+import { HiddenCommitsButton } from './common/HiddenCommitsButton';
 
-const CLASS_NAME = ["text-xs", "font-normal", "leading-4", "opacity-90", "py-1", "px-2"].join(" ");
+const CLASS_NAME = cn('px-2 py-1 text-xs leading-4 font-normal opacity-90');
 
 type Props = {
   expanded: boolean;
@@ -11,14 +12,14 @@ type Props = {
 };
 
 export function HiddenCommitsToggle(props: Props) {
-  const commitText = pluralize("commit", props.hiddenCommitCount);
+  const commitText = pluralize('commit', props.hiddenCommitCount);
 
   return (
     <HiddenCommitsButton
       className={CLASS_NAME}
       style={
         props.hasVisibleBelow || props.expanded
-          ? { borderBottom: "1px solid var(--borderColor-muted)" }
+          ? { borderBottom: '1px solid var(--borderColor-muted)' }
           : undefined
       }
       onClick={props.onToggle}

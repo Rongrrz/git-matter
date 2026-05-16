@@ -1,14 +1,14 @@
-import type { CommitVisibilityMode } from "../types";
-import { SegmentedControl } from "../components/common/SegmentedControl";
+import { SegmentedControl } from '../components/common/SegmentedControl';
+import type { CommitVisibilityMode } from '../types';
 
 const Options: {
   value: CommitVisibilityMode;
   label: string;
   description: string;
 }[] = [
-  { value: "off", label: "Off", description: "Show every commit normally" },
-  { value: "dim", label: "Dim", description: "Dimmed filtered commits." },
-  { value: "hide", label: "Hide", description: "Collapsed filtered commits." },
+  { value: 'off', label: 'Off', description: 'Show every commit normally' },
+  { value: 'dim', label: 'Dim', description: 'Dimmed filtered commits.' },
+  { value: 'hide', label: 'Hide', description: 'Collapsed filtered commits.' },
 ];
 
 type Props = {

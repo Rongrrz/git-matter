@@ -1,10 +1,10 @@
-import { CommitPageSelectors } from "../selectors";
-import { CommitVisibility } from "../visibility";
-import type { CommitPanelItem, TimelineGroup } from "../types";
-import { getFilteredCommitCount } from "../../utils/getFilteredCommitCount";
-import { _controlRegistry } from "./controlRegistry";
-import { _mountStreak } from "./mountStreak";
-import { _mountToggle } from "./mountToggle";
+import { getFilteredCommitCount } from '../../utils/getFilteredCommitCount';
+import { CommitPageSelectors } from '../selectors';
+import type { CommitPanelItem, TimelineGroup } from '../types';
+import { CommitVisibility } from '../visibility';
+import { _controlRegistry } from './controlRegistry';
+import { _mountStreak } from './mountStreak';
+import { _mountToggle } from './mountToggle';
 
 function render(items: CommitPanelItem[]): void {
   _controlRegistry.clearHiddenCommitControls();

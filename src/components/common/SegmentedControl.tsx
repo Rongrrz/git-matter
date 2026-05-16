@@ -28,7 +28,7 @@ export function SegmentedControl<TValue extends string>(props: Props<TValue>) {
           <label
             key={option.value}
             className={`cursor-pointer rounded px-2 py-1 text-center text-xs ${
-              props.value === option.value ? props.selectedClassName : ""
+              props.value === option.value ? props.selectedClassName : ''
             }`}
           >
             <input
