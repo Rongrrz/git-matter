@@ -3,7 +3,10 @@ import { pluralize } from '../utils/pluralize';
 import { HiddenCommitsButton } from './common/HiddenCommitsButton';
 
 const CLASS_NAME = cn(
-  'my-2 rounded-md border border-dashed border-[var(--borderColor-muted)] bg-(--bgColor-muted,rgba(110,118,129,0.1)) px-4 py-3 text-sm font-medium opacity-95',
+  'my-2 rounded-md border border-dashed',
+  'border-[var(--borderColor-muted)]',
+  'bg-(--bgColor-muted,rgba(110,118,129,0.1))',
+  'px-4 py-3 text-sm font-medium opacity-95',
 );
 
 type Props = {
