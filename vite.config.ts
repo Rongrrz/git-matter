@@ -5,11 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { resolve } from "path";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    babel({ presets: [reactCompilerPreset()] }),
-  ],
+  plugins: [react(), tailwindcss(), babel({ presets: [reactCompilerPreset()] })],
 
   build: {
     rollupOptions: {

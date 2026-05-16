@@ -1,7 +1,7 @@
 {
   "name": "git-matter",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,6 +9,8 @@
     "watch": "tsc -b && vite build --watch",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "preview": "vite preview",
     "prepare": "husky"
   },
@@ -32,6 +34,7 @@
     "@vitejs/plugin-react": "^6.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "husky": "^9.1.7",
+    "oxfmt": "^0.50.0",
     "oxlint": "^1.65.0",
     "typescript": "~6.0.2",
     "vite": "^8.0.10"
