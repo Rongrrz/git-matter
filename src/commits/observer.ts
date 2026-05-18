@@ -1,7 +1,12 @@
 import type { CommitVisibilityMode } from '../types';
-import { getCommitAuthors, shouldFilterCommit } from './authorFiltering';
-import { getCommitRowsFromNode } from './getPanels';
-import { CommitPageSelectors, GitMatterSelectors } from './selectors';
+import {
+  collectCommitRowsFromNode,
+  containsCommitPageDom,
+  getCommitAuthors,
+  isCommitPageDomNode,
+  shouldFilterCommit,
+} from './dom';
+import { GitMatterSelectors } from './selectors';
 import { CommitVisibility } from './visibility';
 
 export function observeCommitPage({
@@ -89,7 +94,7 @@ function applyVisibilityToAddedRows(nodes: NodeList, mode: CommitVisibilityMode)
     if (!(node instanceof HTMLElement)) return;
     if (isGitMatterNode(node)) return;
 
-    const rows = getCommitRowsFromNode(node);
+    const rows = collectCommitRowsFromNode(node);
     rows.forEach((row) => {
       const authors = getCommitAuthors(row);
       CommitVisibility.applySingle(
@@ -102,7 +107,7 @@ function applyVisibilityToAddedRows(nodes: NodeList, mode: CommitVisibilityMode)
       );
     });
 
-    if (rows.length > 0 || containsCommitPageStructure(node)) {
+    if (rows.length > 0 || containsCommitPageDom(node)) {
       foundCommitPageContent = true;
     }
   });
@@ -115,12 +120,7 @@ function removedCommitPageContent(nodes: NodeList): boolean {
     if (!(node instanceof HTMLElement)) return false;
     if (isGitMatterNode(node)) return false;
 
-    return (
-      node.matches(CommitPageSelectors.commitRow) ||
-      node.matches(CommitPageSelectors.commitGroupPanel) ||
-      node.matches(CommitPageSelectors.timelineRow) ||
-      containsCommitPageStructure(node)
-    );
+    return isCommitPageDomNode(node);
   });
 }
 
@@ -128,17 +128,5 @@ function isGitMatterNode(node: HTMLElement): boolean {
   return Boolean(
     node.closest(`[${GitMatterSelectors.componentMarker}]`) ||
     node.matches(`[${GitMatterSelectors.componentMarker}]`),
-  );
-}
-
-function containsCommitPageStructure(node: HTMLElement): boolean {
-  return Boolean(
-    node.querySelector(
-      [
-        CommitPageSelectors.commitRow,
-        CommitPageSelectors.commitGroupPanel,
-        CommitPageSelectors.timelineRow,
-      ].join(', '),
-    ),
   );
 }

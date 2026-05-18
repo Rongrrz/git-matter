@@ -1,10 +1,10 @@
 import type { CommitVisibilityMode } from '../../types';
-import { CommitPageSelectors } from '../selectors';
-import type { CommitItem, CommitPanelItem } from '../types';
+import { findCommitRows, findTimelineRows } from '../dom';
+import type { CommitItem, CommitPanel } from '../types';
 import { _lastCommitStyling } from './lastCommitStyling';
 import { _rowState } from './rowState';
 
-function applyPanelCommitVisibility(panels: CommitPanelItem[], mode: CommitVisibilityMode): void {
+function applyPanelCommitVisibility(panels: CommitPanel[], mode: CommitVisibilityMode): void {
   panels.forEach((panel) => {
     _rowState.reset(panel.timelineRow);
 
@@ -26,9 +26,9 @@ function applySingleCommitVisibility(commit: CommitItem, mode: CommitVisibilityM
 }
 
 function resetAllCommitVisibility(): void {
-  document
-    .querySelectorAll<HTMLElement>(CommitPageSelectors.allCommitPageRows)
-    .forEach(_rowState.reset);
+  const rows = [...findCommitRows(), ...findTimelineRows()];
+
+  Array.from(new Set(rows)).forEach(_rowState.reset);
 }
 
 export const _applyVisibility = {

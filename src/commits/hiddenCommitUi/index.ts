@@ -1,22 +1,22 @@
 import { getFilteredCommitCount } from '../../utils/getFilteredCommitCount';
-import { CommitPageSelectors } from '../selectors';
-import type { CommitPanelItem, TimelineGroup } from '../types';
+import { findCommitGroupPanelForRow } from '../dom';
+import type { CommitPanel, CommitPanelContent } from '../types';
 import { CommitVisibility } from '../visibility';
-import { _controlRegistry } from './controlRegistry';
 import { _mountStreak } from './mountStreak';
 import { _mountToggle } from './mountToggle';
+import { _hiddenCommitUiRegistry } from './uiRegistry';
 
-function render(items: CommitPanelItem[]): void {
-  _controlRegistry.clearHiddenCommitControls();
+function render(items: CommitPanel[]): void {
+  _hiddenCommitUiRegistry.clearHiddenCommitUi();
 
-  let streak: TimelineGroup[] = [];
+  let streak: CommitPanelContent[] = [];
 
   function flushStreak(): void {
     if (streak.length === 0) return;
 
     if (streak.length === 1) {
       const [group] = streak;
-      const panel = group.commits[0].row.closest<HTMLElement>(CommitPageSelectors.commitGroupPanel);
+      const panel = findCommitGroupPanelForRow(group.commits[0].row);
       if (panel) {
         _mountToggle.mount(panel, group.commits, false);
       }
@@ -52,7 +52,7 @@ function render(items: CommitPanelItem[]): void {
   flushStreak();
 }
 
-export const HiddenCommitControls = {
-  clear: _controlRegistry.clearHiddenCommitControls,
+export const HiddenCommitUi = {
+  clear: _hiddenCommitUiRegistry.clearHiddenCommitUi,
   render,
 } as const;

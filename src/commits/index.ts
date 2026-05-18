@@ -1,9 +1,9 @@
 import { getStoredCommitVisibility } from '../storage';
 import type { CommitVisibilityMode, ExtensionMessage } from '../types';
 import { runOnce } from '../utils/runOnce';
-import { observeCommitPage } from './commitPageObserver';
-import { getCommitPanels } from './getPanels';
-import { HiddenCommitControls } from './hiddenCommitControls/';
+import { collectCommitPanels } from './dom';
+import { HiddenCommitUi } from './hiddenCommitUi/';
+import { observeCommitPage } from './observer';
 import { CommitVisibility } from './visibility';
 
 let commitVisibilityMode: CommitVisibilityMode = 'hide';
@@ -13,13 +13,13 @@ let commitVisibilityMode: CommitVisibilityMode = 'hide';
  */
 export function runCommitFiltering(): void {
   CommitVisibility.resetAll();
-  const items = getCommitPanels();
+  const items = collectCommitPanels();
 
-  HiddenCommitControls.clear();
+  HiddenCommitUi.clear();
   CommitVisibility.applyPanel(items, commitVisibilityMode);
 
   if (commitVisibilityMode === 'hide') {
-    HiddenCommitControls.render(items);
+    HiddenCommitUi.render(items);
   }
 }
 
@@ -31,7 +31,7 @@ export const initializeCommitFiltering = runOnce(async () => {
   observeCommitPage({
     getMode: () => commitVisibilityMode,
     filter: runCommitFiltering,
-    onPageChange: HiddenCommitControls.clear,
+    onPageChange: HiddenCommitUi.clear,
   });
 
   // Set up listener for popup setting changes.

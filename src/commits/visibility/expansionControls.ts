@@ -1,4 +1,4 @@
-import type { CommitItem, TimelineGroup } from '../types';
+import type { CommitItem, CommitPanelContent } from '../types';
 import { _lastCommitStyling } from './lastCommitStyling';
 import { _rowState } from './rowState';
 
@@ -13,7 +13,7 @@ function setFilteredCommitsExpanded(commits: CommitItem[], expanded: boolean): v
   }
 }
 
-function setHiddenPanelGroupsExpanded(groups: TimelineGroup[], expanded: boolean): void {
+function setHiddenPanelGroupsExpanded(groups: CommitPanelContent[], expanded: boolean): void {
   groups.forEach((group) => {
     _rowState.applyExpandedState([group.timelineRow], expanded);
     setFilteredCommitsExpanded(group.commits, expanded);
