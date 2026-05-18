@@ -1,13 +1,13 @@
 import { getFilteredCommitCount } from '../../utils/getFilteredCommitCount';
-import { findCommitGroupPanelForRow } from '../dom';
+import { CommitDom } from '../dom';
 import type { CommitPanel, CommitPanelContent } from '../types';
 import { CommitVisibility } from '../visibility';
-import { _mountStreak } from './mountStreak';
-import { _mountToggle } from './mountToggle';
-import { _hiddenCommitUiRegistry } from './uiRegistry';
+import { mountHiddenCommitStreakUi } from './mountStreak';
+import { mountHiddenCommitToggleUi } from './mountToggle';
+import { clearMountedHiddenCommitUi } from './uiRegistry';
 
 function render(items: CommitPanel[]): void {
-  _hiddenCommitUiRegistry.clearHiddenCommitUi();
+  clearMountedHiddenCommitUi();
 
   let streak: CommitPanelContent[] = [];
 
@@ -16,13 +16,13 @@ function render(items: CommitPanel[]): void {
 
     if (streak.length === 1) {
       const [group] = streak;
-      const panel = findCommitGroupPanelForRow(group.commits[0].row);
+      const panel = CommitDom.rows.findGroupPanel(group.commits[0].row);
       if (panel) {
-        _mountToggle.mount(panel, group.commits, false);
+        mountHiddenCommitToggleUi(panel, group.commits, false);
       }
     } else {
       CommitVisibility.setHiddenPanelGroupsExpanded(streak, false);
-      _mountStreak(streak);
+      mountHiddenCommitStreakUi(streak);
     }
 
     streak = [];
@@ -46,13 +46,13 @@ function render(items: CommitPanel[]): void {
     }
 
     flushStreak();
-    _mountToggle.mount(item.panel, item.commits, true);
+    mountHiddenCommitToggleUi(item.panel, item.commits, true);
   });
 
   flushStreak();
 }
 
 export const HiddenCommitUi = {
-  clear: _hiddenCommitUiRegistry.clearHiddenCommitUi,
+  clear: clearMountedHiddenCommitUi,
   render,
 } as const;

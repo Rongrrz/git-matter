@@ -14,7 +14,7 @@ function getAuthorFromLabel(label: string | null): string | null {
   return label.slice(prefix.length).trim();
 }
 
-export function getCommitAuthors(row: HTMLElement): string[] {
+function getCommitAuthors(row: HTMLElement): string[] {
   const authors = new Set<string>();
 
   const ariaElement = row.querySelector(GitHubCommitPageSelectors.commitAuthorAria);
@@ -55,6 +55,11 @@ function isAllBotAuthors(authors: string[]): boolean {
   return authors.every((author) => botAuthors.has(author));
 }
 
-export function shouldFilterCommit(authors: string[]): boolean {
+function shouldFilterCommit(authors: string[]): boolean {
   return authors.length > 0 && isAllBotAuthors(authors);
 }
+
+export const CommitAuthors = {
+  get: getCommitAuthors,
+  shouldFilter: shouldFilterCommit,
+} as const;

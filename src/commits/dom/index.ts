@@ -1,11 +1,10 @@
-export { getCommitAuthors, shouldFilterCommit } from './authors';
-export { getCommitPanels as collectCommitPanels, collectCommitRowsFromNode } from './panels';
-export {
-  containsCommitPageDom,
-  findCommitGroupPanelForRow,
-  findCommitRows,
-  findTimelineRows,
-  isCommitPageDomNode,
-  isLikelyCommitRow,
-} from './commits';
-export { GitHubCommitPageSelectors } from './selectors';
+import { CommitAuthors } from './authors';
+import { CommitPageDom, CommitRows } from './commits';
+import { CommitPanels } from './panels';
+
+export const CommitDom = {
+  authors: CommitAuthors,
+  panels: CommitPanels,
+  rows: CommitRows,
+  page: CommitPageDom,
+} as const;

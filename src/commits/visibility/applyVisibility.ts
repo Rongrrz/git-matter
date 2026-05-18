@@ -1,12 +1,15 @@
 import type { CommitVisibilityMode } from '../../types';
-import { findCommitRows, findTimelineRows } from '../dom';
+import { CommitDom } from '../dom';
 import type { CommitItem, CommitPanel } from '../types';
-import { _lastCommitStyling } from './lastCommitStyling';
-import { _rowState } from './rowState';
+import { syncLastCommitStyling } from './lastCommitStyling';
+import { dimRow, hideRow, resetRow } from './rowState';
 
-function applyPanelCommitVisibility(panels: CommitPanel[], mode: CommitVisibilityMode): void {
+export function applyPanelCommitVisibility(
+  panels: CommitPanel[],
+  mode: CommitVisibilityMode,
+): void {
   panels.forEach((panel) => {
-    _rowState.reset(panel.timelineRow);
+    resetRow(panel.timelineRow);
 
     panel.commits.forEach((commit) => {
       applySingleCommitVisibility(commit, mode);
@@ -14,25 +17,19 @@ function applyPanelCommitVisibility(panels: CommitPanel[], mode: CommitVisibilit
 
     // We need to check for an edge case where our current commit will be the "last child"
     // after filtering, so that we do not apply a bottom border.
-    if (mode === 'hide') _lastCommitStyling.sync(panel.commits);
+    if (mode === 'hide') syncLastCommitStyling(panel.commits);
   });
 }
 
-function applySingleCommitVisibility(commit: CommitItem, mode: CommitVisibilityMode): void {
-  _rowState.reset(commit.row);
+export function applySingleCommitVisibility(commit: CommitItem, mode: CommitVisibilityMode): void {
+  resetRow(commit.row);
   if (!commit.filtered || mode === 'off') return;
-  if (mode === 'dim') return _rowState.dim(commit.row);
-  if (mode === 'hide') return _rowState.hide(commit.row);
+  if (mode === 'dim') return dimRow(commit.row);
+  if (mode === 'hide') return hideRow(commit.row);
 }
 
-function resetAllCommitVisibility(): void {
-  const rows = [...findCommitRows(), ...findTimelineRows()];
+export function resetAllCommitVisibility(): void {
+  const rows = [...CommitDom.rows.find(), ...CommitDom.page.findTimelineRows()];
 
-  Array.from(new Set(rows)).forEach(_rowState.reset);
+  Array.from(new Set(rows)).forEach(resetRow);
 }
-
-export const _applyVisibility = {
-  applyPanel: applyPanelCommitVisibility,
-  applySingle: applySingleCommitVisibility,
-  resetAll: resetAllCommitVisibility,
-} as const;

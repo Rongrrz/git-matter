@@ -1,6 +1,6 @@
 import { GitHubCommitPageSelectors } from './selectors';
 
-export function findCommitRows(root: ParentNode = document): HTMLElement[] {
+function findCommitRows(root: ParentNode = document): HTMLElement[] {
   const rows = [
     ...root.querySelectorAll<HTMLElement>(GitHubCommitPageSelectors.commitRow),
     ...findCommitRowsFromLinks(root),
@@ -34,7 +34,7 @@ export function findCommitGroupPanels(root: ParentNode = document): HTMLElement[
   );
 }
 
-export function findCommitGroupPanelForRow(row: HTMLElement): HTMLElement | null {
+function findCommitGroupPanelForRow(row: HTMLElement): HTMLElement | null {
   return (
     row.closest<HTMLElement>(GitHubCommitPageSelectors.commitGroupPanel) ??
     row.closest<HTMLElement>('ol, ul, section, article') ??
@@ -50,11 +50,11 @@ export function findTimelineRowForPanel(panel: HTMLElement): HTMLElement | null 
   );
 }
 
-export function findTimelineRows(root: ParentNode = document): HTMLElement[] {
+function findTimelineRows(root: ParentNode = document): HTMLElement[] {
   return Array.from(root.querySelectorAll<HTMLElement>(GitHubCommitPageSelectors.timelineRow));
 }
 
-export function containsCommitPageDom(node: HTMLElement): boolean {
+function containsCommitPageDom(node: HTMLElement): boolean {
   return (
     isLikelyCommitRow(node) ||
     Boolean(
@@ -70,7 +70,7 @@ export function containsCommitPageDom(node: HTMLElement): boolean {
   );
 }
 
-export function isCommitPageDomNode(node: HTMLElement): boolean {
+function isCommitPageDomNode(node: HTMLElement): boolean {
   return (
     isLikelyCommitRow(node) ||
     node.matches(GitHubCommitPageSelectors.commitGroupPanel) ||
@@ -79,7 +79,7 @@ export function isCommitPageDomNode(node: HTMLElement): boolean {
   );
 }
 
-export function isLikelyCommitRow(row: HTMLElement): boolean {
+function isLikelyCommitRow(row: HTMLElement): boolean {
   return (
     row.matches(GitHubCommitPageSelectors.commitRow) ||
     (Boolean(row.querySelector(GitHubCommitPageSelectors.commitLink)) && hasAuthorSignal(row))
@@ -121,3 +121,15 @@ function hasAuthorSignal(row: HTMLElement): boolean {
 function uniqueElements<TElement extends HTMLElement>(elements: TElement[]): TElement[] {
   return Array.from(new Set(elements));
 }
+
+export const CommitRows = {
+  find: findCommitRows,
+  findGroupPanel: findCommitGroupPanelForRow,
+  isLikely: isLikelyCommitRow,
+} as const;
+
+export const CommitPageDom = {
+  containsDom: containsCommitPageDom,
+  findTimelineRows,
+  isDomNode: isCommitPageDomNode,
+} as const;

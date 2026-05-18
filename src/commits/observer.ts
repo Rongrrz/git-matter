@@ -1,11 +1,5 @@
 import type { CommitVisibilityMode } from '../types';
-import {
-  collectCommitRowsFromNode,
-  containsCommitPageDom,
-  getCommitAuthors,
-  isCommitPageDomNode,
-  shouldFilterCommit,
-} from './dom';
+import { CommitDom } from './dom';
 import { GitMatterSelectors } from './selectors';
 import { CommitVisibility } from './visibility';
 
@@ -94,20 +88,20 @@ function applyVisibilityToAddedRows(nodes: NodeList, mode: CommitVisibilityMode)
     if (!(node instanceof HTMLElement)) return;
     if (isGitMatterNode(node)) return;
 
-    const rows = collectCommitRowsFromNode(node);
+    const rows = CommitDom.panels.collectRowsFromNode(node);
     rows.forEach((row) => {
-      const authors = getCommitAuthors(row);
+      const authors = CommitDom.authors.get(row);
       CommitVisibility.applySingle(
         {
           row,
           authors,
-          filtered: shouldFilterCommit(authors),
+          filtered: CommitDom.authors.shouldFilter(authors),
         },
         mode,
       );
     });
 
-    if (rows.length > 0 || containsCommitPageDom(node)) {
+    if (rows.length > 0 || CommitDom.page.containsDom(node)) {
       foundCommitPageContent = true;
     }
   });
@@ -120,7 +114,7 @@ function removedCommitPageContent(nodes: NodeList): boolean {
     if (!(node instanceof HTMLElement)) return false;
     if (isGitMatterNode(node)) return false;
 
-    return isCommitPageDomNode(node);
+    return CommitDom.page.isDomNode(node);
   });
 }
 

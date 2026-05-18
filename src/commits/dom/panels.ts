@@ -1,25 +1,25 @@
 import type { CommitItem, CommitPanel } from '../types';
-import { getCommitAuthors, shouldFilterCommit } from './authors';
+import { CommitAuthors } from './authors';
 import {
   findCommitGroupPanels,
-  findCommitRows,
   findCommitRowsWithinNode,
   findTimelineRowForPanel,
+  CommitRows,
 } from './commits';
 
-export function getCommitPanels(): CommitPanel[] {
+function collectCommitPanels(): CommitPanel[] {
   const panels = findCommitGroupPanels();
 
   return panels.flatMap((panel) => {
     const timelineRow = findTimelineRowForPanel(panel);
     if (!timelineRow) return [];
 
-    const commits: CommitItem[] = findCommitRows(panel).map((row) => {
-      const authors = getCommitAuthors(row);
+    const commits: CommitItem[] = CommitRows.find(panel).map((row) => {
+      const authors = CommitAuthors.get(row);
       return {
         row,
         authors,
-        filtered: shouldFilterCommit(authors),
+        filtered: CommitAuthors.shouldFilter(authors),
       };
     });
 
@@ -29,6 +29,11 @@ export function getCommitPanels(): CommitPanel[] {
   });
 }
 
-export function collectCommitRowsFromNode(node: HTMLElement): HTMLElement[] {
+function collectCommitRowsFromNode(node: HTMLElement): HTMLElement[] {
   return findCommitRowsWithinNode(node);
 }
+
+export const CommitPanels = {
+  collect: collectCommitPanels,
+  collectRowsFromNode: collectCommitRowsFromNode,
+} as const;
