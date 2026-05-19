@@ -1,7 +1,7 @@
-import type { ThemeColor, PopupTheme } from '../types';
-import { getCurrentSiteColorMode } from './getTheme';
+import type { ThemeColor, PopupTheme } from '../../types';
+import { getCurrentSiteColorMode } from './siteColorMode';
 
-export function resolvePopupColorMode(mode: PopupTheme): ThemeColor {
+export function resolvePopupThemeColor(mode: PopupTheme): ThemeColor {
   return mode === 'auto' ? getCurrentSiteColorMode() : mode;
 }
 

@@ -1,6 +1,6 @@
-import { runOnce } from '../shared/runOnce';
 import { getStoredCommitVisibility } from '../storage';
 import type { CommitVisibilityMode, ExtensionMessage } from '../types';
+import { runOnce } from '../utils/runOnce';
 import { CommitDom } from './dom';
 import { HiddenCommitUi } from './hiddenCommitUi/';
 import { observeCommitPage } from './observer';

@@ -8,15 +8,16 @@ import {
   setStoredPopupTheme,
 } from '../storage';
 import { type CommitVisibilityMode, type PopupTheme } from '../types';
-import { CommitVisibilityOptions } from './CommitVisibilityToggle';
-import { getPopupThemeClasses, resolvePopupColorMode } from './themeColor';
-import { ThemeModeToggle } from './ThemeColorToggle';
+import { CommitVisibilityModeControl } from './components/CommitVisibilityModeControl';
+import { PopupThemeControl } from './components/PopupThemeControl';
+import { sendCommitVisibilityModeToActiveTab } from './sendCommitVisibilityMode';
+import { getPopupThemeClasses, resolvePopupThemeColor } from './theme/popupTheme';
 
 export function Popup() {
   const [mode, setMode] = useState<CommitVisibilityMode>(CommitVisibility_DEFAULT);
   const [themeMode, setThemeMode] = useState<PopupTheme>(PopupTheme_DEFAULT);
   const [loading, setLoading] = useState(true);
-  const theme = getPopupThemeClasses(resolvePopupColorMode(themeMode));
+  const theme = getPopupThemeClasses(resolvePopupThemeColor(themeMode));
 
   useEffect(() => {
     Promise.all([getStoredCommitVisibility(), getStoredPopupTheme()]).then(
@@ -47,7 +48,7 @@ export function Popup() {
     <div className={theme.shell}>
       <h1 className="mb-4 text-lg font-semibold">Git Matter</h1>
 
-      <CommitVisibilityOptions
+      <CommitVisibilityModeControl
         mode={mode}
         borderClassName={theme.border}
         mutedTextClassName={theme.mutedText}
@@ -55,7 +56,7 @@ export function Popup() {
         onChange={handleModeChange}
       />
 
-      <ThemeModeToggle
+      <PopupThemeControl
         mode={themeMode}
         borderClassName={theme.border}
         mutedTextClassName={theme.mutedText}
@@ -64,18 +65,4 @@ export function Popup() {
       />
     </div>
   );
-}
-
-async function sendCommitVisibilityModeToActiveTab(mode: CommitVisibilityMode) {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab?.id) return;
-
-  if (!tab.url?.includes('github.com')) return;
-
-  await chrome.tabs
-    .sendMessage(tab.id, {
-      type: 'SET_COMMIT_VISIBILITY_MODE',
-      mode,
-    })
-    .catch(() => undefined);
 }

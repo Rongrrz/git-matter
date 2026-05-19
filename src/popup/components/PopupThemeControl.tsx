@@ -1,5 +1,5 @@
-import { SegmentedControl } from '../components/SegmentedControl';
-import type { PopupTheme } from '../types';
+import { SegmentedControl } from '../../components/SegmentedControl';
+import type { PopupTheme } from '../../types';
 
 const OPTIONS: { value: PopupTheme; label: string }[] = [
   { value: 'auto', label: 'Auto' },
@@ -15,7 +15,7 @@ type Props = {
   onChange: (mode: PopupTheme) => void;
 };
 
-export function ThemeModeToggle(props: Props) {
+export function PopupThemeControl(props: Props) {
   return (
     <fieldset className={`mt-4 border-t pt-4 ${props.borderClassName}`}>
       <SegmentedControl

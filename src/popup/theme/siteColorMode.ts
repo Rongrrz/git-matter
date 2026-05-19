@@ -1,4 +1,4 @@
-import type { ThemeColor } from '../types';
+import type { ThemeColor } from '../../types';
 
 export function getBrowserColorMode(): ThemeColor {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

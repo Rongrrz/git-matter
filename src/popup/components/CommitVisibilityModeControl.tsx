@@ -1,7 +1,7 @@
-import { SegmentedControl } from '../components/SegmentedControl';
-import type { CommitVisibilityMode } from '../types';
+import { SegmentedControl } from '../../components/SegmentedControl';
+import type { CommitVisibilityMode } from '../../types';
 
-const Options: {
+const OPTIONS: {
   value: CommitVisibilityMode;
   label: string;
   description: string;
@@ -19,13 +19,13 @@ type Props = {
   onChange: (mode: CommitVisibilityMode) => void;
 };
 
-export function CommitVisibilityOptions(props: Props) {
+export function CommitVisibilityModeControl(props: Props) {
   return (
     <SegmentedControl
       label="Commit visibility"
       name="commitVisibilityMode"
       value={props.mode}
-      options={Options}
+      options={OPTIONS}
       borderClassName={props.borderClassName}
       mutedTextClassName={props.mutedTextClassName}
       selectedClassName={props.selectedClassName}

@@ -1,5 +1,5 @@
-import { cn } from '../../../shared/cn';
-import { pluralize } from '../../../shared/pluralize';
+import { cn } from '../../../utils/cn';
+import { pluralize } from '../../../utils/pluralize';
 import { HiddenCommitsButton } from './HiddenCommitsButton';
 
 const CLASS_NAME = cn(
