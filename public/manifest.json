@@ -23,7 +23,7 @@
     {
       "matches": ["https://github.com/*/*/commits/*"],
       "js": ["loader.js"],
-      "css": ["assets/jsx-runtime.css"]
+      "css": ["assets/index.css"]
     }
   ],
   "web_accessible_resources": [

@@ -24,7 +24,8 @@ export default defineConfig({
         format: 'esm',
         entryFileNames: '[name].js',
         chunkFileNames: 'chunks/[name].js',
-        assetFileNames: 'assets/[name].[ext]',
+        assetFileNames: (assetInfo) =>
+          assetInfo.name?.endsWith('.css') ? 'assets/index.css' : 'assets/[name].[ext]',
       },
     },
   },

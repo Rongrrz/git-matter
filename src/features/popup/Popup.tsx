@@ -7,7 +7,7 @@ import { getPopupThemeClasses, resolvePopupThemeColor } from '@/features/popup/t
 import {
   commitVisibilityPreference,
   popupThemePreference,
-} from '@/shared/storage/preferences/definitions';
+} from '@/shared/storage/userPreferenceDefinitions';
 import { type CommitVisibilityMode, type PopupTheme } from '@/shared/types/userPreferenceOptions';
 
 export function Popup() {
