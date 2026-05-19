@@ -1,5 +1,9 @@
 import { BrowserStorage } from '../storage';
-import { CommitVisibilityModeMap, type CommitVisibilityMode, type ExtensionMessage } from '../types';
+import {
+  CommitVisibilityModeMap,
+  type CommitVisibilityMode,
+  type ExtensionMessage,
+} from '../types';
 import { runOnce } from '../utils/runOnce';
 import { CommitDom } from './dom';
 import { HiddenCommitUi } from './hiddenCommitUi/';
