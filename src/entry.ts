@@ -1,4 +1,4 @@
-import './index.css';
-import { initializeCommitFiltering } from './commits';
+import '@/index.css';
+import { initializeCommitFiltering } from '@/features/commits/index';
 
 initializeCommitFiltering();
