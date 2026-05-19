@@ -1,11 +1,13 @@
-import { findCommitRows, findTimelineRows } from '@/features/commits/dom/commits';
-import type { CommitItem, CommitPanel } from '@/features/commits/types';
-import { syncLastCommitStyling } from '@/features/commits/visibility/lastCommitStyling';
-import { dimRow, hideRow, resetRow } from '@/features/commits/visibility/rowState';
 import {
   CommitVisibilityModeMap,
   type CommitVisibilityMode,
 } from '@/shared/types/userPreferenceOptions';
+
+import { findCommitRows } from '../dom/commits';
+import { findTimelineRows } from '../dom/panels';
+import type { CommitItem, CommitPanel } from '../types';
+import { syncLastCommitStyling } from './lastCommitStyling';
+import { dimRow, hideRow, resetRow } from './rowState';
 
 export function applyPanelCommitVisibility(
   panels: CommitPanel[],
@@ -33,6 +35,5 @@ export function applySingleCommitVisibility(commit: CommitItem, mode: CommitVisi
 
 export function resetAllCommitVisibility(): void {
   const rows = [...findCommitRows(), ...findTimelineRows()];
-
-  Array.from(new Set(rows)).forEach(resetRow);
+  rows.forEach(resetRow);
 }

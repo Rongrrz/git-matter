@@ -1,6 +1,7 @@
-import { HiddenCommitsButton } from '@/features/commits/hiddenCommitUi/components/HiddenCommitsButton';
 import { cn } from '@/shared/utils/cn';
 import { pluralize } from '@/shared/utils/pluralize';
+
+import { HiddenCommitsButton } from './HiddenCommitsButton';
 
 const CLASS_NAME = cn('px-2 py-1 text-xs leading-4 font-normal opacity-90');
 

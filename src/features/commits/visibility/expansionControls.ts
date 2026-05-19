@@ -1,9 +1,6 @@
-import type { CommitItem, CommitPanelContent } from '@/features/commits/types';
-import {
-  clearLastCommitStyling,
-  syncLastCommitStyling,
-} from '@/features/commits/visibility/lastCommitStyling';
-import { applyExpandedState } from '@/features/commits/visibility/rowState';
+import type { CommitItem, CommitPanelContent } from '../types';
+import { clearLastCommitStyling, syncLastCommitStyling } from './lastCommitStyling';
+import { applyExpandedState } from './rowState';
 
 export function setFilteredCommitsExpanded(commits: CommitItem[], expanded: boolean): void {
   const hiddenRows = commits.filter((commit) => commit.filtered).map((commit) => commit.row);

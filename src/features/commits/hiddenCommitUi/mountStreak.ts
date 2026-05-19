@@ -1,10 +1,10 @@
 import { createElement } from 'react';
 
-import { HiddenCommitsStreak } from '@/features/commits/hiddenCommitUi/components/HiddenCommitsStreak';
-import { getHiddenCommitCount } from '@/features/commits/hiddenCommitUi/getHiddenCommitCount';
-import { mountHiddenCommitUi } from '@/features/commits/hiddenCommitUi/uiRegistry';
-import type { CommitPanelContent } from '@/features/commits/types';
-import { setHiddenPanelGroupsExpanded } from '@/features/commits/visibility/expansionControls';
+import type { CommitPanelContent } from '../types';
+import { setHiddenPanelGroupsExpanded } from '../visibility/expansionControls';
+import { HiddenCommitsStreak } from './components/HiddenCommitsStreak';
+import { getHiddenCommitCount } from './getHiddenCommitCount';
+import { mountHiddenCommitUi } from './uiRegistry';
 
 export function mountHiddenCommitStreakUi(groups: CommitPanelContent[]): void {
   const [firstGroup] = groups;

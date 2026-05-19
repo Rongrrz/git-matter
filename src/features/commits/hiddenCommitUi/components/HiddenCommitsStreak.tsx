@@ -1,6 +1,7 @@
-import { HiddenCommitsButton } from '@/features/commits/hiddenCommitUi/components/HiddenCommitsButton';
 import { cn } from '@/shared/utils/cn';
 import { pluralize } from '@/shared/utils/pluralize';
+
+import { HiddenCommitsButton } from './HiddenCommitsButton';
 
 const CLASS_NAME = cn(
   'my-2 rounded-md border border-dashed',

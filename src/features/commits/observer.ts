@@ -1,9 +1,53 @@
-import { getCommitAuthors, shouldFilterCommit } from '@/features/commits/dom/authors';
-import { containsCommitPageDom, isCommitPageDomNode } from '@/features/commits/dom/commits';
-import { collectCommitRowsFromNode } from '@/features/commits/dom/panels';
-import { GitMatterSelectors } from '@/features/commits/selectors';
-import { applySingleCommitVisibility } from '@/features/commits/visibility/applyVisibility';
 import type { CommitVisibilityMode } from '@/shared/types/userPreferenceOptions';
+
+import { getCommitAuthors, shouldFilterCommit } from './dom/authors';
+import { containsCommitPageDom, findCommitRows, isCommitPageDomNode } from './dom/commits';
+import { GitMatterSelectors } from './selectors';
+import { applySingleCommitVisibility } from './visibility/applyVisibility';
+
+function removedCommitPageContent(nodes: NodeList): boolean {
+  return Array.from(nodes).some((node) => {
+    if (!(node instanceof HTMLElement)) return false;
+    if (isGitMatterNode(node)) return false;
+
+    return isCommitPageDomNode(node);
+  });
+}
+
+function isGitMatterNode(node: HTMLElement): boolean {
+  return Boolean(
+    node.closest(`[${GitMatterSelectors.componentMarker}]`) ||
+    node.matches(`[${GitMatterSelectors.componentMarker}]`),
+  );
+}
+
+function applyVisibilityToAddedRows(nodes: NodeList, mode: CommitVisibilityMode): boolean {
+  let foundCommitPageContent = false;
+
+  nodes.forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    if (isGitMatterNode(node)) return;
+
+    const rows = findCommitRows(node);
+    rows.forEach((row) => {
+      const authors = getCommitAuthors(row);
+      applySingleCommitVisibility(
+        {
+          row,
+          authors,
+          filtered: shouldFilterCommit(authors),
+        },
+        mode,
+      );
+    });
+
+    if (rows.length > 0 || containsCommitPageDom(node)) {
+      foundCommitPageContent = true;
+    }
+  });
+
+  return foundCommitPageContent;
+}
 
 export function observeCommitPage({
   getMode,
@@ -81,48 +125,4 @@ function observeNavigation(onChange: () => void): void {
   };
 
   window.addEventListener('popstate', onChange);
-}
-
-function applyVisibilityToAddedRows(nodes: NodeList, mode: CommitVisibilityMode): boolean {
-  let foundCommitPageContent = false;
-
-  nodes.forEach((node) => {
-    if (!(node instanceof HTMLElement)) return;
-    if (isGitMatterNode(node)) return;
-
-    const rows = collectCommitRowsFromNode(node);
-    rows.forEach((row) => {
-      const authors = getCommitAuthors(row);
-      applySingleCommitVisibility(
-        {
-          row,
-          authors,
-          filtered: shouldFilterCommit(authors),
-        },
-        mode,
-      );
-    });
-
-    if (rows.length > 0 || containsCommitPageDom(node)) {
-      foundCommitPageContent = true;
-    }
-  });
-
-  return foundCommitPageContent;
-}
-
-function removedCommitPageContent(nodes: NodeList): boolean {
-  return Array.from(nodes).some((node) => {
-    if (!(node instanceof HTMLElement)) return false;
-    if (isGitMatterNode(node)) return false;
-
-    return isCommitPageDomNode(node);
-  });
-}
-
-function isGitMatterNode(node: HTMLElement): boolean {
-  return Boolean(
-    node.closest(`[${GitMatterSelectors.componentMarker}]`) ||
-    node.matches(`[${GitMatterSelectors.componentMarker}]`),
-  );
 }

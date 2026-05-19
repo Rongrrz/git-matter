@@ -1,5 +1,6 @@
-import { GitHubCommitPageSelectors } from '@/features/commits/dom/selectors';
 import { botAuthors } from '@/shared/constants/botAuthors';
+
+import { GitHubCommitPageSelectors } from './selectors';
 
 const authorLabelPrefixes = ['commits by ', 'committed by ', 'authored by '];
 

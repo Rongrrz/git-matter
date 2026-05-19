@@ -15,6 +15,7 @@ type Props = {
   onChange: (mode: PopupTheme) => void;
 };
 
+// TODO: Is this fieldset wrapper really necessary?
 export function PopupThemeControl(props: Props) {
   return (
     <fieldset className={`mt-4 border-t pt-4 ${props.borderClassName}`}>

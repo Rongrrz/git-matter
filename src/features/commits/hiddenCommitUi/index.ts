@@ -1,10 +1,10 @@
-import { findCommitGroupPanelForRow } from '@/features/commits/dom/commits';
-import { getHiddenCommitCount } from '@/features/commits/hiddenCommitUi/getHiddenCommitCount';
-import { mountHiddenCommitStreakUi } from '@/features/commits/hiddenCommitUi/mountStreak';
-import { mountHiddenCommitToggleUi } from '@/features/commits/hiddenCommitUi/mountToggle';
-import { clearMountedHiddenCommitUi } from '@/features/commits/hiddenCommitUi/uiRegistry';
-import type { CommitPanel, CommitPanelContent } from '@/features/commits/types';
-import { setHiddenPanelGroupsExpanded } from '@/features/commits/visibility/expansionControls';
+import { findCommitGroupPanelForRow } from '../dom/panels';
+import type { CommitPanel, CommitPanelContent } from '../types';
+import { setHiddenPanelGroupsExpanded } from '../visibility/expansionControls';
+import { getHiddenCommitCount } from './getHiddenCommitCount';
+import { mountHiddenCommitStreakUi } from './mountStreak';
+import { mountHiddenCommitToggleUi } from './mountToggle';
+import { clearMountedHiddenCommitUi } from './uiRegistry';
 
 export function renderHiddenCommitUi(items: CommitPanel[]): void {
   clearMountedHiddenCommitUi();

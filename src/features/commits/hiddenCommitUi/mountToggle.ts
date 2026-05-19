@@ -1,10 +1,10 @@
 import { createElement } from 'react';
 
-import { HiddenCommitsToggle } from '@/features/commits/hiddenCommitUi/components/HiddenCommitsToggle';
-import { getHiddenCommitCount } from '@/features/commits/hiddenCommitUi/getHiddenCommitCount';
-import { mountHiddenCommitUi } from '@/features/commits/hiddenCommitUi/uiRegistry';
-import type { CommitItem } from '@/features/commits/types';
-import { setFilteredCommitsExpanded } from '@/features/commits/visibility/expansionControls';
+import type { CommitItem } from '../types';
+import { setFilteredCommitsExpanded } from '../visibility/expansionControls';
+import { HiddenCommitsToggle } from './components/HiddenCommitsToggle';
+import { getHiddenCommitCount } from './getHiddenCommitCount';
+import { mountHiddenCommitUi } from './uiRegistry';
 
 export function mountHiddenCommitToggleUi(
   panel: HTMLElement,

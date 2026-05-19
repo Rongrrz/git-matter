@@ -1,4 +1,4 @@
-import { UserPreference } from '@/shared/storage/preferences/userPreference';
+import { UserPreference } from '@/shared/storage/userPreference';
 import {
   CommitVisibilityModeMap,
   PopupThemeMap,

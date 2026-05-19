@@ -1,18 +1,16 @@
-import { collectCommitPanels } from '@/features/commits/dom/panels';
-import { renderHiddenCommitUi } from '@/features/commits/hiddenCommitUi/index';
-import { clearMountedHiddenCommitUi } from '@/features/commits/hiddenCommitUi/uiRegistry';
-import { observeCommitPage } from '@/features/commits/observer';
-import {
-  applyPanelCommitVisibility,
-  resetAllCommitVisibility,
-} from '@/features/commits/visibility/applyVisibility';
-import { commitVisibilityPreference } from '@/shared/storage/preferences/definitions';
+import { commitVisibilityPreference } from '@/shared/storage/userPreferenceDefinitions';
 import type { ExtensionMessage } from '@/shared/types/messages';
 import {
   CommitVisibilityModeMap,
   type CommitVisibilityMode,
 } from '@/shared/types/userPreferenceOptions';
 import { runOnce } from '@/shared/utils/runOnce';
+
+import { collectCommitPanels } from './dom/panels';
+import { renderHiddenCommitUi } from './hiddenCommitUi/index';
+import { clearMountedHiddenCommitUi } from './hiddenCommitUi/uiRegistry';
+import { observeCommitPage } from './observer';
+import { applyPanelCommitVisibility, resetAllCommitVisibility } from './visibility/applyVisibility';
 
 let commitVisibilityMode: CommitVisibilityMode = CommitVisibilityModeMap.Dim;
 
