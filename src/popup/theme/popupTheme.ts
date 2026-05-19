@@ -1,12 +1,15 @@
-import type { ThemeColor, PopupTheme } from '../../types';
+import { type PopupTheme, PopupThemeMap } from '../../types';
+import { ThemeColorMap, type ThemeColor } from '../../types/userPreferenceOptions';
 import { getCurrentSiteColorMode } from './siteColorMode';
 
 export function resolvePopupThemeColor(mode: PopupTheme): ThemeColor {
-  return mode === 'auto' ? getCurrentSiteColorMode() : mode;
+  if (mode === PopupThemeMap.Auto) return getCurrentSiteColorMode();
+  if (mode === PopupThemeMap.Light) return ThemeColorMap.Light;
+  return ThemeColorMap.Dark;
 }
 
 export function getPopupThemeClasses(mode: ThemeColor) {
-  if (mode === 'dark') {
+  if (mode === ThemeColorMap.Dark) {
     return {
       shell: 'w-64 bg-[#0d1117] p-4 font-sans text-sm text-[#e6edf3]',
       mutedText: 'text-[#8b949e]',

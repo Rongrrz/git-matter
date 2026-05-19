@@ -1,10 +1,10 @@
 import { SegmentedControl } from '../../components/SegmentedControl';
-import type { PopupTheme } from '../../types';
+import { PopupThemeMap, type PopupTheme } from '../../types';
 
 const OPTIONS: { value: PopupTheme; label: string }[] = [
-  { value: 'auto', label: 'Auto' },
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
+  { value: PopupThemeMap.Auto, label: 'Auto' },
+  { value: PopupThemeMap.Light, label: 'Light' },
+  { value: PopupThemeMap.Dark, label: 'Dark' },
 ];
 
 type Props = {
