@@ -1,10 +1,14 @@
-import { _applyVisibility } from './applyVisibility';
-import { _expansionControls } from './expansionControls';
+import {
+  applyPanelCommitVisibility,
+  applySingleCommitVisibility,
+  resetAllCommitVisibility,
+} from './applyVisibility';
+import { setFilteredCommitsExpanded, setHiddenPanelGroupsExpanded } from './expansionControls';
 
 export const CommitVisibility = {
-  applyPanel: _applyVisibility.applyPanel,
-  applySingle: _applyVisibility.applySingle,
-  resetAll: _applyVisibility.resetAll,
-  setFilteredCommitsExpanded: _expansionControls.setFilteredCommitsExpanded,
-  setHiddenPanelGroupsExpanded: _expansionControls.setHiddenPanelGroupsExpanded,
+  applyPanel: applyPanelCommitVisibility,
+  applySingle: applySingleCommitVisibility,
+  resetAll: resetAllCommitVisibility,
+  setFilteredCommitsExpanded,
+  setHiddenPanelGroupsExpanded,
 } as const;

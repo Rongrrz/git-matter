@@ -1,13 +1,13 @@
 import { GitMatterSelectors } from '../selectors';
 import type { CommitItem } from '../types';
 
-function clearLastCommitStyling(commits: CommitItem[]): void {
+export function clearLastCommitStyling(commits: CommitItem[]): void {
   commits.forEach((commit) => {
     commit.row.classList.remove(GitMatterSelectors.lastCommit);
   });
 }
 
-function syncLastCommitStyling(commits: CommitItem[]): void {
+export function syncLastCommitStyling(commits: CommitItem[]): void {
   clearLastCommitStyling(commits);
 
   commits.forEach((commit, index) => {
@@ -22,8 +22,3 @@ function syncLastCommitStyling(commits: CommitItem[]): void {
     }
   });
 }
-
-export const _lastCommitStyling = {
-  clear: clearLastCommitStyling,
-  sync: syncLastCommitStyling,
-} as const;

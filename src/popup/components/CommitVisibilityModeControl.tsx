@@ -1,14 +1,14 @@
-import { SegmentedControl } from '../components/common/SegmentedControl';
-import type { CommitVisibilityMode } from '../types';
+import { SegmentedControl } from '../../components/SegmentedControl';
+import { CommitVisibilityModeMap, type CommitVisibilityMode } from '../../types';
 
-const Options: {
+const OPTIONS: {
   value: CommitVisibilityMode;
   label: string;
   description: string;
 }[] = [
-  { value: 'off', label: 'Off', description: 'Show every commit normally' },
-  { value: 'dim', label: 'Dim', description: 'Dimmed filtered commits.' },
-  { value: 'hide', label: 'Hide', description: 'Collapsed filtered commits.' },
+  { value: CommitVisibilityModeMap.Off, label: 'Off', description: 'Show every commit normally' },
+  { value: CommitVisibilityModeMap.Dim, label: 'Dim', description: 'Dimmed filtered commits.' },
+  { value: CommitVisibilityModeMap.Hide, label: 'Hide', description: 'Collapse filtered commits.' },
 ];
 
 type Props = {
@@ -19,13 +19,13 @@ type Props = {
   onChange: (mode: CommitVisibilityMode) => void;
 };
 
-export function CommitVisibilityOptions(props: Props) {
+export function CommitVisibilityModeControl(props: Props) {
   return (
     <SegmentedControl
       label="Commit visibility"
       name="commitVisibilityMode"
       value={props.mode}
-      options={Options}
+      options={OPTIONS}
       borderClassName={props.borderClassName}
       mutedTextClassName={props.mutedTextClassName}
       selectedClassName={props.selectedClassName}

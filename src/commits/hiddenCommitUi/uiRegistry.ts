@@ -3,30 +3,28 @@ import type { Root } from 'react-dom/client';
 import { createReactMount } from '../../utils/createReactMount';
 import { GitMatterSelectors } from '../selectors';
 
-type MountedControl = {
+type MountedHiddenCommitUi = {
   container: HTMLElement;
   root: Root;
 };
 
-const controls = new Set<MountedControl>();
+const mountedUi = new Set<MountedHiddenCommitUi>();
 
-function clearHiddenCommitControls(): void {
-  controls.forEach(({ container, root }) => {
+export function clearMountedHiddenCommitUi(): void {
+  mountedUi.forEach(({ container, root }) => {
     root.unmount();
     container.remove();
   });
-  controls.clear();
+  mountedUi.clear();
 }
 
-function mountControl(className: string, insert: (container: HTMLElement) => void): Root {
+export function mountHiddenCommitUi(
+  className: string,
+  insert: (container: HTMLElement) => void,
+): Root {
   const { container, root } = createReactMount(className);
   container.setAttribute(GitMatterSelectors.componentMarker, '');
-  controls.add({ container, root });
+  mountedUi.add({ container, root });
   insert(container);
   return root;
 }
-
-export const _controlRegistry = {
-  clearHiddenCommitControls,
-  mountControl,
-} as const;

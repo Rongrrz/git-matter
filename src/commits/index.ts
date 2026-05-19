@@ -1,37 +1,41 @@
-import { getStoredCommitVisibility } from '../storage';
-import type { CommitVisibilityMode, ExtensionMessage } from '../types';
+import { BrowserStorage } from '../storage';
+import {
+  CommitVisibilityModeMap,
+  type CommitVisibilityMode,
+  type ExtensionMessage,
+} from '../types';
 import { runOnce } from '../utils/runOnce';
-import { observeCommitPage } from './commitPageObserver';
-import { getCommitPanels } from './getPanels';
-import { HiddenCommitControls } from './hiddenCommitControls/';
+import { CommitDom } from './dom';
+import { HiddenCommitUi } from './hiddenCommitUi/';
+import { observeCommitPage } from './observer';
 import { CommitVisibility } from './visibility';
 
-let commitVisibilityMode: CommitVisibilityMode = 'hide';
+let commitVisibilityMode: CommitVisibilityMode = CommitVisibilityModeMap.Dim;
 
 /**
  * Resets the commit page and re-applies DOM changes based on the current mode.
  */
 export function runCommitFiltering(): void {
   CommitVisibility.resetAll();
-  const items = getCommitPanels();
+  const items = CommitDom.panels.collect();
 
-  HiddenCommitControls.clear();
+  HiddenCommitUi.clear();
   CommitVisibility.applyPanel(items, commitVisibilityMode);
 
-  if (commitVisibilityMode === 'hide') {
-    HiddenCommitControls.render(items);
+  if (commitVisibilityMode === CommitVisibilityModeMap.Hide) {
+    HiddenCommitUi.render(items);
   }
 }
 
 // This is where ~ALL~ the magic happens
 export const initializeCommitFiltering = runOnce(async () => {
-  commitVisibilityMode = await getStoredCommitVisibility();
+  commitVisibilityMode = await BrowserStorage.userPreferences.commitVisibility.get();
 
   // Set up observer for DOM changes
   observeCommitPage({
     getMode: () => commitVisibilityMode,
     filter: runCommitFiltering,
-    onPageChange: HiddenCommitControls.clear,
+    onPageChange: HiddenCommitUi.clear,
   });
 
   // Set up listener for popup setting changes.

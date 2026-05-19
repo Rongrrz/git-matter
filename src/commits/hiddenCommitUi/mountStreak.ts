@@ -1,21 +1,21 @@
 import { createElement } from 'react';
 
-import { HiddenCommitsStreak } from '../../components/HiddenCommitsStreak';
-import { getFilteredCommitCount } from '../../utils/getFilteredCommitCount';
-import type { TimelineGroup } from '../types';
+import type { CommitPanelContent } from '../types';
 import { CommitVisibility } from '../visibility';
-import { _controlRegistry } from './controlRegistry';
+import { HiddenCommitsStreak } from './components/HiddenCommitsStreak';
+import { getHiddenCommitCount } from './getHiddenCommitCount';
+import { mountHiddenCommitUi } from './uiRegistry';
 
-export function _mountStreak(groups: TimelineGroup[]): void {
+export function mountHiddenCommitStreakUi(groups: CommitPanelContent[]): void {
   const [firstGroup] = groups;
   const parent = firstGroup.timelineRow.parentElement;
   if (!parent) return;
 
-  const root = _controlRegistry.mountControl('git-matter-streak-root', (container) => {
+  const root = mountHiddenCommitUi('git-matter-streak-root', (container) => {
     parent.insertBefore(container, firstGroup.timelineRow);
   });
 
-  const hiddenCommitCount = getFilteredCommitCount(groups.flatMap((group) => group.commits));
+  const hiddenCommitCount = getHiddenCommitCount(groups.flatMap((group) => group.commits));
 
   let expanded = false;
   const render = () => {

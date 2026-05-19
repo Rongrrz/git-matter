@@ -4,10 +4,11 @@ export type CommitItem = {
   filtered: boolean;
 };
 
-export type CommitPanelItem = {
-  panel: HTMLElement;
+export type CommitPanelContent = {
   timelineRow: HTMLElement;
   commits: CommitItem[];
 };
 
-export type TimelineGroup = Omit<CommitPanelItem, 'panel'>;
+export type CommitPanel = CommitPanelContent & {
+  panel: HTMLElement;
+};
