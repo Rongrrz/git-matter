@@ -1,7 +1,7 @@
-import { getFilteredCommitCount } from '../../utils/getFilteredCommitCount';
 import { CommitDom } from '../dom';
 import type { CommitPanel, CommitPanelContent } from '../types';
 import { CommitVisibility } from '../visibility';
+import { getHiddenCommitCount } from './getHiddenCommitCount';
 import { mountHiddenCommitStreakUi } from './mountStreak';
 import { mountHiddenCommitToggleUi } from './mountToggle';
 import { clearMountedHiddenCommitUi } from './uiRegistry';
@@ -29,7 +29,7 @@ function render(items: CommitPanel[]): void {
   }
 
   items.forEach((item) => {
-    const hiddenCommitCount = getFilteredCommitCount(item.commits);
+    const hiddenCommitCount = getHiddenCommitCount(item.commits);
     const visibleCount = item.commits.length - hiddenCommitCount;
 
     if (hiddenCommitCount === 0) {

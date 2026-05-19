@@ -1,4 +1,4 @@
-import { SegmentedControl } from '../components/common/SegmentedControl';
+import { SegmentedControl } from '../components/SegmentedControl';
 import type { CommitVisibilityMode } from '../types';
 
 const Options: {

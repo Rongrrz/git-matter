@@ -1,9 +1,9 @@
 import { createElement } from 'react';
 
-import { HiddenCommitsStreak } from '../../components/HiddenCommitsStreak';
-import { getFilteredCommitCount } from '../../utils/getFilteredCommitCount';
 import type { CommitPanelContent } from '../types';
 import { CommitVisibility } from '../visibility';
+import { HiddenCommitsStreak } from './components/HiddenCommitsStreak';
+import { getHiddenCommitCount } from './getHiddenCommitCount';
 import { mountHiddenCommitUi } from './uiRegistry';
 
 export function mountHiddenCommitStreakUi(groups: CommitPanelContent[]): void {
@@ -15,7 +15,7 @@ export function mountHiddenCommitStreakUi(groups: CommitPanelContent[]): void {
     parent.insertBefore(container, firstGroup.timelineRow);
   });
 
-  const hiddenCommitCount = getFilteredCommitCount(groups.flatMap((group) => group.commits));
+  const hiddenCommitCount = getHiddenCommitCount(groups.flatMap((group) => group.commits));
 
   let expanded = false;
   const render = () => {

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { cn } from '../../utils/cn';
+import { cn } from '../../../shared/cn';
 
 const BASE_CLASS_NAME = cn(
   'block w-full cursor-pointer text-left text-(--fgColor-muted) hover:underline hover:opacity-100',

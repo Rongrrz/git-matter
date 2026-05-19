@@ -1,6 +1,6 @@
 import type { Root } from 'react-dom/client';
 
-import { createReactMount } from '../../utils/createReactMount';
+import { createReactMount } from '../../shared/createReactMount';
 import { GitMatterSelectors } from '../selectors';
 
 type MountedHiddenCommitUi = {

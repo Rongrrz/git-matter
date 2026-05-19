@@ -1,6 +1,6 @@
-import { cn } from '../utils/cn';
-import { pluralize } from '../utils/pluralize';
-import { HiddenCommitsButton } from './common/HiddenCommitsButton';
+import { cn } from '../../../shared/cn';
+import { pluralize } from '../../../shared/pluralize';
+import { HiddenCommitsButton } from './HiddenCommitsButton';
 
 const CLASS_NAME = cn(
   'my-2 rounded-md border border-dashed',

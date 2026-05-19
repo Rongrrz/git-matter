@@ -1,9 +1,9 @@
 import { createElement } from 'react';
 
-import { HiddenCommitsToggle } from '../../components/HiddenCommitsToggle';
-import { getFilteredCommitCount } from '../../utils/getFilteredCommitCount';
 import type { CommitItem } from '../types';
 import { CommitVisibility } from '../visibility';
+import { HiddenCommitsToggle } from './components/HiddenCommitsToggle';
+import { getHiddenCommitCount } from './getHiddenCommitCount';
 import { mountHiddenCommitUi } from './uiRegistry';
 
 export function mountHiddenCommitToggleUi(
@@ -11,7 +11,7 @@ export function mountHiddenCommitToggleUi(
   commits: CommitItem[],
   hasVisibleBelow: boolean,
 ): void {
-  const hiddenCommitCount = getFilteredCommitCount(commits);
+  const hiddenCommitCount = getHiddenCommitCount(commits);
   const root = mountHiddenCommitUi('git-matter-toggle-root', (container) => {
     panel.insertBefore(container, panel.firstChild);
   });

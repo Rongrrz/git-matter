@@ -1,6 +1,6 @@
-import { cn } from '../utils/cn';
-import { pluralize } from '../utils/pluralize';
-import { HiddenCommitsButton } from './common/HiddenCommitsButton';
+import { cn } from '../../../shared/cn';
+import { pluralize } from '../../../shared/pluralize';
+import { HiddenCommitsButton } from './HiddenCommitsButton';
 
 const CLASS_NAME = cn('px-2 py-1 text-xs leading-4 font-normal opacity-90');
 

@@ -1,4 +1,4 @@
-import { SegmentedControl } from '../components/common/SegmentedControl';
+import { SegmentedControl } from '../components/SegmentedControl';
 import type { PopupTheme } from '../types';
 
 const OPTIONS: { value: PopupTheme; label: string }[] = [
