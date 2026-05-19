@@ -22,7 +22,7 @@ export function runCommitFiltering(): void {
   HiddenCommitUi.clear();
   CommitVisibility.applyPanel(items, commitVisibilityMode);
 
-  if (commitVisibilityMode === CommitVisibilityModeMap.Dim) {
+  if (commitVisibilityMode === CommitVisibilityModeMap.Hide) {
     HiddenCommitUi.render(items);
   }
 }
